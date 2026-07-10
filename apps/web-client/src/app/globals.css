@@ -20,3 +20,9 @@
 :root {
   color-scheme: dark;
 }
+
+/* Tailwind v4 preflight leaves buttons with cursor: default — restore pointer affordance. */
+button:not(:disabled),
+[role='button']:not(:disabled) {
+  cursor: pointer;
+}
