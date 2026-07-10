@@ -128,10 +128,16 @@ async function run(): Promise<void> {
   const durationMs = Date.now() - startedAt;
   log.info({ ...counters, durationMs }, 'run summary');
 
-  // A run that fetched items but stored nothing (and wasn't 100% duplicates) is a failure.
-  if (counters.fetched > 0 && counters.stored === 0 && counters.deduped < counters.fetched) {
+  // A quiet day (nothing scored above threshold) is success. Fail only on
+  // systemic breakage: fresh items but zero extractions, or scored items that
+  // all failed synthesis/storage.
+  const freshCount = counters.fetched - counters.deduped;
+  if (freshCount > 0 && counters.extracted === 0) {
     process.exitCode = 1;
-    log.error('run stored nothing despite fresh items — check upstream failures');
+    log.error('extraction produced nothing from fresh items — pipeline is broken upstream');
+  } else if (counters.kept > 0 && counters.stored === 0) {
+    process.exitCode = 1;
+    log.error('all kept items failed synthesis/storage — check Groq/Mongo');
   }
 }
 
