@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+.next/
+out/
+.nx/cache
+.nx/workspace-data
+*.tsbuildinfo
+
+# Environment & secrets — never commit these
+.env
+.env.*
+!.env.example
+
+# Vercel
+.vercel/
+
+# Logs & OS noise
+*.log
+.DS_Store
+
+# Local model cache (Transformers.js downloads models here)
+.cache/
+models/
