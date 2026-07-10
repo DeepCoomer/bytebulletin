@@ -1,11 +1,22 @@
 @import 'tailwindcss';
 
+/* Design tokens mirrored from deepcoomer.dev's theme — keep in sync with the portfolio. */
 @theme {
   --font-sans:
     ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
     sans-serif;
+
+  --color-canvas: #0c0c0f;
+  --color-surface: #111318;
+  --color-raised: #16191f;
+  --color-edge: #1e2028;
+  --color-edge-hi: #2a2d38;
+  --color-ink: #f9fafb;
+  --color-ink-dim: #94a3b8;
+  --color-ink-faint: #64748b;
+  --color-accent: #a78bfa;
 }
 
 :root {
-  color-scheme: light dark;
+  color-scheme: dark;
 }

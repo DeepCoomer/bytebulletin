@@ -24,8 +24,8 @@ export function SettingsSheet() {
   }
 
   return (
-    <div className="text-xs text-stone-500 dark:text-stone-400">
-      <button onClick={() => setOpen(!open)} className="hover:underline">
+    <div className="text-xs text-ink-faint">
+      <button onClick={() => setOpen(!open)} className="transition-colors hover:text-accent">
         {open ? 'Close settings' : 'Settings'}
       </button>
       {open && (
@@ -35,11 +35,11 @@ export function SettingsSheet() {
             value={token}
             onChange={(e) => setToken(e.target.value)}
             placeholder="Action token"
-            className="w-full rounded border border-stone-300 bg-white px-2 py-1 text-sm dark:border-stone-700 dark:bg-stone-900"
+            className="w-full rounded border border-edge bg-raised px-2 py-1 text-sm text-ink outline-none focus:border-accent"
           />
           <button
             onClick={save}
-            className="rounded bg-stone-900 px-3 py-1 text-sm text-stone-50 dark:bg-stone-100 dark:text-stone-900"
+            className="rounded bg-accent px-3 py-1 text-sm font-medium text-canvas"
           >
             Save
           </button>

@@ -3,6 +3,11 @@ export const CATEGORIES = [
   'Frontend-Performance',
   'AI-Infrastructure',
   'DevOps-Cloud',
+  'Databases-Storage',
+  'Security',
+  'Languages-Runtimes',
+  'Open-Source-Tools',
+  'Trending-Discussions',
   'General-Tech',
 ] as const;
 

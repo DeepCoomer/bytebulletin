@@ -66,7 +66,9 @@ Env vars (see `.env.example`): `MONGODB_URI`, `GROQ_API_KEY`, `ACTION_TOKEN`,
 
 - **Digest** — one processed article document in Mongo (`digests` collection).
 - **Category** — exactly: `Architecture`, `Frontend-Performance`,
-  `AI-Infrastructure`, `DevOps-Cloud`, `General-Tech`.
+  `AI-Infrastructure`, `DevOps-Cloud`, `Databases-Storage`, `Security`,
+  `Languages-Runtimes`, `Open-Source-Tools`, `Trending-Discussions`,
+  `General-Tech` (defined once in `packages/shared/src/constants.ts`).
 - **Score** — cosine similarity (−1..1) of article embedding vs profile centroid;
   keep-threshold `MIN_SCORE` (default 0.35), top 30 per run go to the LLM.
 - **dedupHash** — `md5(title.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim())`,

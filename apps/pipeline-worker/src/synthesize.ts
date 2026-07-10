@@ -10,10 +10,11 @@ CRITICAL RULES:
 1. Return ONLY the raw JSON object — no markdown fences, no wrapper text.
 2. If the article has no architectural substance (generic marketing, funding rounds, non-technical corporate news), set category to "General-Tech" and summarize it in exactly one concise sentence with at most one bullet point.
 3. "impactAnalysis" must explain the structural trade-off, performance implication, or developer-workflow change this introduces — not restate the headline.
+4. Use "Trending-Discussions" for items whose value is the community conversation itself (viral threads, debates, hot takes) rather than a specific technical artifact.
 
 OUTPUT JSON SCHEMA:
 {
-  "category": "Architecture" | "Frontend-Performance" | "AI-Infrastructure" | "DevOps-Cloud" | "General-Tech",
+  "category": "Architecture" | "Frontend-Performance" | "AI-Infrastructure" | "DevOps-Cloud" | "Databases-Storage" | "Security" | "Languages-Runtimes" | "Open-Source-Tools" | "Trending-Discussions" | "General-Tech",
   "summary": {
     "impactAnalysis": "string",
     "bulletPoints": ["string", "string", "string"]
