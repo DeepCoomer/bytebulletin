@@ -15,6 +15,21 @@ export function SettingsSheet() {
   const [token, setToken] = useState('');
 
   useEffect(() => {
+    // One-time setup via /?token=… : persist it, then scrub it from the URL so
+    // it never lingers in the address bar or history. (On iOS installed PWAs,
+    // storage is isolated — paste into this sheet inside the app instead.)
+    const params = new URLSearchParams(window.location.search);
+    const fromUrl = params.get('token');
+    if (fromUrl) {
+      window.localStorage.setItem(TOKEN_KEY, fromUrl.trim());
+      params.delete('token');
+      const query = params.toString();
+      window.history.replaceState(
+        null,
+        '',
+        window.location.pathname + (query ? `?${query}` : ''),
+      );
+    }
     setToken(getActionToken());
   }, []);
 

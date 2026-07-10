@@ -234,8 +234,7 @@ morning after a scheduled pipeline run.
   `profile' = normalize(profile + 0.4 · mean(liked embeddings) − 0.2 · mean(disliked embeddings))`.
 - Later candidates: per-category thresholds, weekly email digest, full-text search,
   CORS header on `GET /api/digests` (allow `https://www.deepcoomer.dev`) so the
-  portfolio can embed a live "top 3 headlines" teaser, `?token=` URL param for
-  one-time action-token setup per device.
+  portfolio can embed a live "top 3 headlines" teaser.
 
 **Accept:** liking several AI-infra articles measurably raises next-run scores for
 similar items (log profile drift in the run summary).
