@@ -8,7 +8,7 @@ import type { RawItem } from './types';
 export const RSS_FEEDS: ReadonlyArray<{ name: string; url: string }> = [
   { name: 'Cloudflare Blog', url: 'https://blog.cloudflare.com/rss/' },
   { name: 'Netflix TechBlog', url: 'https://netflixtechblog.com/feed' },
-  { name: 'Uber Engineering', url: 'https://www.uber.com/en-US/blog/engineering/rss/' },
+  { name: 'Meta Engineering', url: 'https://engineering.fb.com/feed/' },
   { name: 'Stripe Blog', url: 'https://stripe.com/blog/feed.rss' },
   { name: 'GitHub Engineering', url: 'https://github.blog/engineering/feed/' },
   { name: 'Vercel Blog', url: 'https://vercel.com/atom' },

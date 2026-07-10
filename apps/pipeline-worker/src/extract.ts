@@ -1,5 +1,5 @@
 import { Readability } from '@mozilla/readability';
-import { JSDOM } from 'jsdom';
+import { JSDOM, VirtualConsole } from 'jsdom';
 import { MAX_ARTICLE_CHARS } from '@bytebulletin/shared';
 import { http } from './http';
 import type { RawItem } from './sources/types';
@@ -10,9 +10,14 @@ export interface ExtractedArticle {
   degraded: boolean;
 }
 
+// Swallows jsdom's "Could not parse CSS stylesheet" stderr spam — harmless for
+// text extraction, deafening across a hundred real-world pages.
+const virtualConsole = new VirtualConsole();
+virtualConsole.on('jsdomError', () => {});
+
 /** Pure HTML → readable text. Exported for offline tests. */
 export function extractFromHtml(html: string, url: string): string | undefined {
-  const dom = new JSDOM(html, { url });
+  const dom = new JSDOM(html, { url, virtualConsole });
   const article = new Readability(dom.window.document).parse();
   const text = article?.textContent?.replace(/\s+/g, ' ').trim();
   return text || undefined;
