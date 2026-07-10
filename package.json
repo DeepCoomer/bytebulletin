@@ -1,0 +1,24 @@
+{
+  "name": "bytebulletin",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Personalized dev-news digest — daily ingestion pipeline + offline-first PWA",
+  "scripts": {
+    "pipeline:run": "pnpm --filter @bytebulletin/pipeline-worker start",
+    "web:dev": "pnpm --filter web-client dev",
+    "web:build": "pnpm --filter web-client build",
+    "test": "nx run-many -t test",
+    "lint": "nx run-many -t lint",
+    "build": "nx run-many -t build",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "nx": "^21.2.0",
+    "prettier": "^3.6.0",
+    "typescript": "^5.8.0"
+  },
+  "packageManager": "pnpm@11.10.0",
+  "engines": {
+    "node": ">=22"
+  }
+}

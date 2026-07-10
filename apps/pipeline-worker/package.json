@@ -1,0 +1,35 @@
+{
+  "name": "@bytebulletin/pipeline-worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/main.ts",
+    "build": "tsc --noEmit",
+    "test": "vitest run",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "@bytebulletin/shared": "workspace:*",
+    "@huggingface/transformers": "^3.6.0",
+    "@mozilla/readability": "^0.6.0",
+    "axios": "^1.10.0",
+    "axios-retry": "^4.5.0",
+    "dotenv": "^17.0.0",
+    "groq-sdk": "^0.26.0",
+    "jsdom": "^26.1.0",
+    "mongodb": "^6.17.0",
+    "p-limit": "^6.2.0",
+    "pino": "^9.7.0",
+    "rss-parser": "^3.13.0",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^21.1.7",
+    "@types/node": "^24.0.0",
+    "eslint": "^9.30.0",
+    "tsx": "^4.20.0",
+    "typescript-eslint": "^8.35.0",
+    "vitest": "^3.2.0"
+  }
+}
