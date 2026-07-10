@@ -10,8 +10,8 @@ export const metadata: Metadata = {
     title: 'ByteBulletin',
     statusBarStyle: 'black-translucent',
   },
+  // Favicon comes from src/app/icon.png (file convention); apple-touch stays explicit.
   icons: {
-    icon: '/icon-192.png',
     apple: '/icon-192.png',
   },
 };

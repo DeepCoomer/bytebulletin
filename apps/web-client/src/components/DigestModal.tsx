@@ -4,11 +4,17 @@ import { useEffect, useState } from 'react';
 import type { Interaction } from '@bytebulletin/shared/client';
 import type { DigestJson } from '@/lib/data';
 import { CATEGORY_STYLES, relativeTime } from './DigestCard';
-import { getActionToken } from './SettingsSheet';
+import { getActionToken } from '@/lib/token';
 
 export function DigestModal({ digest, onClose }: { digest: DigestJson; onClose: () => void }) {
   const [interaction, setInteraction] = useState<Interaction>(digest.userInteraction);
   const [error, setError] = useState<string | null>(null);
+  // Feedback buttons are owner-only: visitors without a token never see them.
+  const [hasToken, setHasToken] = useState(false);
+
+  useEffect(() => {
+    setHasToken(!!getActionToken());
+  }, []);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
@@ -22,10 +28,6 @@ export function DigestModal({ digest, onClose }: { digest: DigestJson; onClose: 
 
   async function sendInteraction(next: Interaction) {
     const token = getActionToken();
-    if (!token) {
-      setError('Set your action token in settings first.');
-      return;
-    }
     const previous = interaction;
     const value = next === previous ? 'NONE' : next; // tap again to undo
     setInteraction(value);
@@ -102,7 +104,8 @@ export function DigestModal({ digest, onClose }: { digest: DigestJson; onClose: 
           Read original →
         </a>
 
-        <div className="mt-5 flex items-center gap-2 border-t border-edge pt-4">
+        {hasToken && (
+          <div className="mt-5 flex items-center gap-2 border-t border-edge pt-4">
           <button
             onClick={() => sendInteraction('LIKED')}
             aria-pressed={interaction === 'LIKED'}
@@ -125,8 +128,9 @@ export function DigestModal({ digest, onClose }: { digest: DigestJson; onClose: 
           >
             👎 Less
           </button>
-          {error && <span className="text-xs text-rose-400">{error}</span>}
-        </div>
+            {error && <span className="text-xs text-rose-400">{error}</span>}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -6,7 +6,6 @@ import { CATEGORIES, type Category } from '@bytebulletin/shared/client';
 import type { DigestJson } from '@/lib/data';
 import { DigestCard } from './DigestCard';
 import { DigestModal } from './DigestModal';
-import { SettingsSheet } from './SettingsSheet';
 
 type Filter = Category | 'All';
 
@@ -104,7 +103,14 @@ export function AppShell({ initialDigests }: { initialDigests: DigestJson[] }) {
         </nav>
 
         <div className="border-t border-edge px-5 py-4">
-          <SettingsSheet />
+          <a
+            href="https://www.deepcoomer.dev"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-ink-faint transition-colors hover:text-accent"
+          >
+            Built by deepcoomer
+          </a>
         </div>
       </aside>
 
