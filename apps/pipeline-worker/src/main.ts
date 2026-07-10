@@ -11,14 +11,14 @@ import {
   workerEnv,
   type Digest,
 } from '@bytebulletin/shared';
-import { dedupHash } from './dedup.js';
-import { cosineSimilarity, embed } from './embed.js';
-import { extractArticle } from './extract.js';
-import { getProfileVector } from './profile.js';
-import { fetchAllSources } from './sources/registry.js';
-import type { RawItem } from './sources/types.js';
-import { createGroqClient, synthesize } from './synthesize.js';
-import { findExistingHashes, storeDigest } from './store.js';
+import { dedupHash } from './dedup';
+import { cosineSimilarity, embed } from './embed';
+import { extractArticle } from './extract';
+import { getProfileVector } from './profile';
+import { fetchAllSources } from './sources/registry';
+import type { RawItem } from './sources/types';
+import { createGroqClient, synthesize } from './synthesize';
+import { findExistingHashes, storeDigest } from './store';
 
 // Works from both the package dir (pnpm --filter) and the repo root.
 loadEnv({ path: [resolve(process.cwd(), '.env'), resolve(process.cwd(), '../../.env')], quiet: true });

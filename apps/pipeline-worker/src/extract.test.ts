@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { ARTICLE_HTML, EMPTY_HTML } from './__fixtures__/article.js';
-import { extractFromHtml } from './extract.js';
+import { ARTICLE_HTML, EMPTY_HTML } from './__fixtures__/article';
+import { extractFromHtml } from './extract';
 
 describe('extractFromHtml', () => {
   it('extracts main article text and drops chrome', () => {

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { DEFAULT_MIN_SCORE } from './constants.js';
+import { DEFAULT_MIN_SCORE } from './constants';
 
 const WorkerEnvSchema = z.object({
   MONGODB_URI: z.string().startsWith('mongodb'),

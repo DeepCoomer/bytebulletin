@@ -1,6 +1,6 @@
 import Parser from 'rss-parser';
-import { http } from '../http.js';
-import type { RawItem } from './types.js';
+import { http } from '../http';
+import type { RawItem } from './types';
 
 const parser = new Parser();
 

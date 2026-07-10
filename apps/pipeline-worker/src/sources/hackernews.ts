@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { http } from '../http.js';
-import type { RawItem } from './types.js';
+import { http } from '../http';
+import type { RawItem } from './types';
 
 const HnResponseSchema = z.object({
   hits: z.array(

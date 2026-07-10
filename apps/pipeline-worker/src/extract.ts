@@ -1,8 +1,8 @@
 import { Readability } from '@mozilla/readability';
 import { JSDOM } from 'jsdom';
 import { MAX_ARTICLE_CHARS } from '@bytebulletin/shared';
-import { http } from './http.js';
-import type { RawItem } from './sources/types.js';
+import { http } from './http';
+import type { RawItem } from './sources/types';
 
 export interface ExtractedArticle {
   text: string;

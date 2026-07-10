@@ -44,6 +44,11 @@ Env vars (see `.env.example`): `MONGODB_URI`, `GROQ_API_KEY`, `ACTION_TOKEN`,
 
 - **Never** import web-client code into the worker or vice versa; share only via
   `packages/shared`.
+- Browser code (client components) imports `@bytebulletin/shared/client` — the
+  root barrel pulls in `mongodb` and breaks the client bundle. Server code uses
+  the root import.
+- Relative imports are extensionless (`moduleResolution: bundler`); do not add
+  `.js` extensions — webpack/Next cannot resolve them from TS sources.
 - **Never** move the pipeline onto Vercel functions or add a paid embedding API —
   deliberate decisions, see plan.md §0.
 - Zod-validate every I/O boundary: env at startup, LLM responses, API

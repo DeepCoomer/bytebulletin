@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CATEGORIES, EMBEDDING_DIM, INTERACTIONS } from './constants.js';
+import { CATEGORIES, EMBEDDING_DIM, INTERACTIONS } from './constants';
 
 export const CategorySchema = z.enum(CATEGORIES);
 export const InteractionSchema = z.enum(INTERACTIONS);

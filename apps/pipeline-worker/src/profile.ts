@@ -1,4 +1,4 @@
-import { embed, meanVector } from './embed.js';
+import { embed, meanVector } from './embed';
 
 /**
  * The developer-interest profile. Edit these statements to retune what the

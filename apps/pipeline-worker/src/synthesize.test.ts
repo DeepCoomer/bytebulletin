@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { parseLlmContent, synthesize, type ChatClient } from './synthesize.js';
+import { parseLlmContent, synthesize, type ChatClient } from './synthesize';
 
 const validPayload = JSON.stringify({
   category: 'Architecture',

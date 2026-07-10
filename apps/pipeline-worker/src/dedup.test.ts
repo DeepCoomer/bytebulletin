@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dedupHash, normalizeTitle } from './dedup.js';
+import { dedupHash, normalizeTitle } from './dedup';
 
 describe('normalizeTitle', () => {
   it('lowercases and collapses punctuation/whitespace', () => {

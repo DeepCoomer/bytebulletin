@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cosineSimilarity, meanVector } from './embed.js';
+import { cosineSimilarity, meanVector } from './embed';
 
 describe('cosineSimilarity', () => {
   it('is 1 for identical unit vectors', () => {

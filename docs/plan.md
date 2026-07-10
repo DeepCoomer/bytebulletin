@@ -27,7 +27,7 @@ Two deliberate deviations from the original PRD — do not "fix" these back:
 |---|---|---|
 | Monorepo | Nx + pnpm workspaces | `npx create-nx-workspace bytebulletin --preset=ts --pm pnpm` |
 | Language | TypeScript strict everywhere | `"strict": true`, no `any` at package boundaries |
-| Node | 22 LTS | pin in `.nvmrc` and workflow `node-version` |
+| Node | 24 LTS | pin in `.nvmrc` and workflow `node-version` |
 | Web app | Next.js 15, App Router | `apps/web-client` |
 | Worker | Plain Node CLI (tsx) | `apps/pipeline-worker`, entry `src/main.ts` |
 | Shared code | `packages/shared` | Zod schemas, TS types, Mongo client, constants |

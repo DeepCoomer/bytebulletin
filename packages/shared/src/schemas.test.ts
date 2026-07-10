@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { EMBEDDING_DIM } from './constants.js';
+import { EMBEDDING_DIM } from './constants';
 import {
   DigestSchema,
   InteractionRequestSchema,
   LlmOutputSchema,
-} from './schemas.js';
+} from './schemas';
 
 const validSummary = {
   impactAnalysis: 'Moves consistency checks to the storage layer, trading write latency for safety.',

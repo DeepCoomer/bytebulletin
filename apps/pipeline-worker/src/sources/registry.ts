@@ -1,9 +1,9 @@
 import pLimit from 'p-limit';
 import { MAX_ITEM_AGE_HOURS } from '@bytebulletin/shared';
 import type { Logger } from 'pino';
-import { fetchHackerNews } from './hackernews.js';
-import { fetchRssFeed } from './rss.js';
-import type { RawItem } from './types.js';
+import { fetchHackerNews } from './hackernews';
+import { fetchRssFeed } from './rss';
+import type { RawItem } from './types';
 
 export const RSS_FEEDS: ReadonlyArray<{ name: string; url: string }> = [
   { name: 'Cloudflare Blog', url: 'https://blog.cloudflare.com/rss/' },

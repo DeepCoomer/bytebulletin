@@ -6,7 +6,7 @@ import type {
   InteractionSchema,
   LlmOutputSchema,
   SummarySchema,
-} from './schemas.js';
+} from './schemas';
 
 export type Category = z.infer<typeof CategorySchema>;
 export type Interaction = z.infer<typeof InteractionSchema>;

@@ -1,6 +1,6 @@
 import { MongoClient, type Collection } from 'mongodb';
-import { DB_NAME, DIGESTS_COLLECTION } from './constants.js';
-import type { Digest } from './types.js';
+import { DB_NAME, DIGESTS_COLLECTION } from './constants';
+import type { Digest } from './types';
 
 // Cached on globalThis so Next.js dev-server hot reloads reuse one connection
 // instead of leaking a client per recompile. Harmless in the worker (single process).
