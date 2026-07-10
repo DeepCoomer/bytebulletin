@@ -11,6 +11,7 @@
   "dependencies": {
     "@bytebulletin/shared": "workspace:*",
     "dotenv": "^17.0.0",
+    "mongodb": "^6.17.0",
     "next": "^15.3.4",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
