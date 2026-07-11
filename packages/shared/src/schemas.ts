@@ -45,6 +45,13 @@ export const PipelineConfigSchema = z.object({
   interestStatements: z.array(z.string().min(3)).min(1).max(20).optional(),
 });
 
+/** A browser PushSubscription, stored per owner device. */
+export const PushSubscriptionSchema = z.object({
+  endpoint: z.url(),
+  expirationTime: z.number().nullable().optional(),
+  keys: z.object({ p256dh: z.string().min(1), auth: z.string().min(1) }),
+});
+
 /** One pipeline run's outcome, recorded for the owner dashboard. */
 export const RunSummarySchema = z.object({
   startedAt: z.coerce.date(),

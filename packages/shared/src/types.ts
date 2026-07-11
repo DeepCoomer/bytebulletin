@@ -1,6 +1,7 @@
 import type { z } from 'zod';
 import type {
   CategorySchema,
+  PushSubscriptionSchema,
   DigestApiSchema,
   DigestSchema,
   InteractionSchema,
@@ -18,3 +19,4 @@ export type Digest = z.infer<typeof DigestSchema>;
 export type DigestApi = z.infer<typeof DigestApiSchema>;
 export type PipelineConfig = z.infer<typeof PipelineConfigSchema>;
 export type RunSummary = z.infer<typeof RunSummarySchema>;
+export type PushSubscriptionDoc = z.infer<typeof PushSubscriptionSchema> & { createdAt: Date };

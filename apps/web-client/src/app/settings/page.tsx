@@ -102,6 +102,7 @@ export default function SettingsPage() {
 
       {state === 'owner' && (
         <>
+          <NotificationsSection />
           <ConfigSection />
           <RunsSection />
           <InsightsSection />
@@ -115,6 +116,104 @@ export default function SettingsPage() {
         ← Back to feed
       </Link>
     </main>
+  );
+}
+
+function urlBase64ToUint8Array(base64: string): Uint8Array {
+  const padding = '='.repeat((4 - (base64.length % 4)) % 4);
+  const raw = atob((base64 + padding).replace(/-/g, '+').replace(/_/g, '/'));
+  return Uint8Array.from(raw, (c) => c.charCodeAt(0));
+}
+
+function NotificationsSection() {
+  const [status, setStatus] = useState<string>('');
+  const [enabled, setEnabled] = useState(false);
+
+  useEffect(() => {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      setStatus('Push is not supported in this browser.');
+      return;
+    }
+    navigator.serviceWorker.getRegistration().then(async (reg) => {
+      const sub = await reg?.pushManager.getSubscription();
+      if (sub) {
+        setEnabled(true);
+        setStatus('Notifications are on for this device.');
+      }
+    });
+  }, []);
+
+  async function enable() {
+    setStatus('');
+    const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+    if (!vapidKey) {
+      setStatus('Push not configured (missing public key).');
+      return;
+    }
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') {
+      setStatus('Permission denied — allow notifications in browser settings.');
+      return;
+    }
+    const reg = await navigator.serviceWorker.getRegistration();
+    if (!reg) {
+      setStatus('No service worker — this works on the deployed site (or a production build), not in dev.');
+      return;
+    }
+    try {
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(vapidKey).buffer as ArrayBuffer,
+      });
+      const res = await fetch('/api/push/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(sub.toJSON()),
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      setEnabled(true);
+      setStatus('Notifications are on for this device.');
+    } catch (err) {
+      setStatus(`Subscription failed: ${String(err)}`);
+    }
+  }
+
+  async function disable() {
+    const reg = await navigator.serviceWorker.getRegistration();
+    const sub = await reg?.pushManager.getSubscription();
+    if (sub) {
+      await fetch('/api/push/subscribe', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ endpoint: sub.endpoint }),
+      }).catch(() => null);
+      await sub.unsubscribe();
+    }
+    setEnabled(false);
+    setStatus('Notifications are off for this device.');
+  }
+
+  return (
+    <section className={sectionCls}>
+      <h2 className={h2Cls}>Notifications</h2>
+      <p className="mt-1 text-xs text-ink-faint">
+        One push per pipeline run: how many digests landed, plus the top headline. Quiet runs
+        send nothing.
+      </p>
+      <div className="mt-3 flex items-center gap-3">
+        <button
+          onClick={enabled ? disable : enable}
+          className={
+            enabled
+              ? 'rounded bg-raised px-4 py-2 text-sm text-ink-dim transition-colors hover:bg-edge-hi hover:text-ink'
+              : 'rounded bg-accent px-4 py-2 text-sm font-medium text-canvas transition-opacity hover:opacity-90'
+          }
+        >
+          {enabled ? 'Disable on this device' : 'Enable on this device'}
+        </button>
+        {status && <span className="text-xs text-ink-dim">{status}</span>}
+      </div>
+    </section>
   );
 }
 

@@ -21,6 +21,7 @@ import { getProfileVector } from './profile';
 import { fetchAllSources } from './sources/registry';
 import type { RawItem } from './sources/types';
 import { createGroqClient, synthesize } from './synthesize';
+import { sendRunNotification } from './notify';
 import { findExistingHashes, storeDigest } from './store';
 
 // Works from both the package dir (pnpm --filter) and the repo root.
@@ -117,6 +118,7 @@ async function run(): Promise<void> {
   // 5+6. Synthesize and store. Serial: Groq free tier is 12k tokens/min and a
   // full article is ~3k — parallel calls just trade 429 retries for throughput.
   const llmLimit = pLimit(1);
+  let topStored: { title: string; score: number } | undefined;
   await Promise.all(
     kept.map((s) =>
       llmLimit(async () => {
@@ -135,7 +137,12 @@ async function run(): Promise<void> {
             userInteraction: 'NONE',
             createdAt: new Date(),
           });
-          if (await storeDigest(digests, digest)) counters.stored++;
+          if (await storeDigest(digests, digest)) {
+            counters.stored++;
+            if (!topStored || s.score > topStored.score) {
+              topStored = { title: s.item.title, score: s.score };
+            }
+          }
         } catch (err) {
           counters.failures++;
           log.warn({ url: s.item.url, err: String(err) }, 'synthesize/store failed');
@@ -167,7 +174,14 @@ async function run(): Promise<void> {
     log.error('all kept items failed synthesis/storage — check Groq/Mongo');
   }
 
-  // 8. Record the run for the owner dashboard (best-effort).
+  // 8. Notify owner devices (best-effort; silent on quiet runs).
+  try {
+    await sendRunNotification(env, log, { stored: counters.stored, topTitle: topStored?.title });
+  } catch (err) {
+    log.warn({ err: String(err) }, 'push notification step failed');
+  }
+
+  // 9. Record the run for the owner dashboard (best-effort).
   try {
     const runs = await getRunsCollection(env.MONGODB_URI);
     await runs.insertOne({

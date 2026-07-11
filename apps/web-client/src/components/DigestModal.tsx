@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import type { Interaction } from '@bytebulletin/shared/client';
+import type { Category, Interaction } from '@bytebulletin/shared/client';
 import type { DigestJson } from '@/lib/data';
 import { CATEGORY_STYLES, relativeTime } from './DigestCard';
 
@@ -9,10 +9,12 @@ export function DigestModal({
   digest,
   isOwner,
   onClose,
+  onFilter,
 }: {
   digest: DigestJson;
   isOwner: boolean;
   onClose: () => void;
+  onFilter?: (category: Category) => void;
 }) {
   const [interaction, setInteraction] = useState<Interaction>(digest.userInteraction);
   const [error, setError] = useState<string | null>(null);
@@ -69,11 +71,13 @@ export function DigestModal({
         </button>
 
         <div className="mb-3 flex flex-wrap items-center gap-2 pr-8 text-xs text-ink-faint">
-          <span
-            className={`rounded-full px-2 py-0.5 font-medium ${CATEGORY_STYLES[digest.category]}`}
+          <button
+            title={`Filter: ${digest.category.replace('-', ' ')}`}
+            onClick={() => onFilter?.(digest.category)}
+            className={`rounded-full px-2 py-0.5 font-medium transition-opacity hover:opacity-75 ${CATEGORY_STYLES[digest.category]}`}
           >
             {digest.category.replace('-', ' ')}
-          </span>
+          </button>
           <span>{digest.sourceName}</span>
           <span aria-hidden>·</span>
           <time dateTime={digest.createdAt}>{relativeTime(digest.createdAt)}</time>

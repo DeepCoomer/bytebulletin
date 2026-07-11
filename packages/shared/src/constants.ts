@@ -22,6 +22,7 @@ export const LLM_MODEL = 'llama-3.3-70b-versatile';
 export const DB_NAME = 'bytebulletin';
 export const DIGESTS_COLLECTION = 'digests';
 export const RUNS_COLLECTION = 'runs';
+export const PUSH_SUBSCRIPTIONS_COLLECTION = 'push_subscriptions';
 export const CONFIG_COLLECTION = 'config';
 export const CONFIG_KEY = 'global';
 

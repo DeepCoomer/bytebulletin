@@ -5,6 +5,10 @@ const WorkerEnvSchema = z.object({
   MONGODB_URI: z.string().startsWith('mongodb'),
   GROQ_API_KEY: z.string().min(1),
   MIN_SCORE: z.coerce.number().min(-1).max(1).default(DEFAULT_MIN_SCORE),
+  // Web Push (optional — notifications are skipped when absent)
+  VAPID_PUBLIC_KEY: z.string().optional(),
+  VAPID_PRIVATE_KEY: z.string().optional(),
+  VAPID_SUBJECT: z.string().default('mailto:deepcoomer45@gmail.com'),
 });
 
 const WebEnvSchema = z.object({

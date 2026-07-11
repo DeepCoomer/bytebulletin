@@ -1,7 +1,14 @@
 import { MongoClient, type Collection } from 'mongodb';
-import { CONFIG_COLLECTION, CONFIG_KEY, DB_NAME, DIGESTS_COLLECTION, RUNS_COLLECTION } from './constants';
+import {
+  CONFIG_COLLECTION,
+  CONFIG_KEY,
+  DB_NAME,
+  DIGESTS_COLLECTION,
+  PUSH_SUBSCRIPTIONS_COLLECTION,
+  RUNS_COLLECTION,
+} from './constants';
 import { PipelineConfigSchema } from './schemas';
-import type { Digest, PipelineConfig, RunSummary } from './types';
+import type { Digest, PipelineConfig, PushSubscriptionDoc, RunSummary } from './types';
 
 // Cached on globalThis so Next.js dev-server hot reloads reuse one connection
 // instead of leaking a client per recompile. Harmless in the worker (single process).
@@ -29,6 +36,13 @@ export async function ensureIndexes(uri: string): Promise<void> {
 export async function getRunsCollection(uri: string): Promise<Collection<RunSummary>> {
   const client = await getMongoClient(uri);
   return client.db(DB_NAME).collection<RunSummary>(RUNS_COLLECTION);
+}
+
+export async function getPushSubscriptionsCollection(
+  uri: string,
+): Promise<Collection<PushSubscriptionDoc>> {
+  const client = await getMongoClient(uri);
+  return client.db(DB_NAME).collection<PushSubscriptionDoc>(PUSH_SUBSCRIPTIONS_COLLECTION);
 }
 
 /** Merged owner overrides; missing/invalid doc degrades to {} (code defaults apply). */

@@ -29,9 +29,11 @@ export function relativeTime(iso: string): string {
 export function DigestCard({
   digest,
   onOpen,
+  onFilter,
 }: {
   digest: DigestJson;
   onOpen: (digest: DigestJson) => void;
+  onFilter?: (category: Category) => void;
 }) {
   return (
     <li className="list-none">
@@ -40,8 +42,16 @@ export function DigestCard({
         className="flex h-full w-full flex-col gap-2 rounded-lg border border-edge bg-surface p-4 text-left transition-colors hover:border-edge-hi hover:bg-raised"
       >
         <div className="flex items-center gap-2 text-xs text-ink-faint">
+          {/* span, not button: nested buttons are invalid HTML; stopPropagation keeps the modal shut */}
           <span
-            className={`rounded-full px-2 py-0.5 font-medium ${CATEGORY_STYLES[digest.category]}`}
+            role="button"
+            title={`Filter: ${digest.category.replace('-', ' ')}`}
+            onClick={(e) => {
+              if (!onFilter) return;
+              e.stopPropagation();
+              onFilter(digest.category);
+            }}
+            className={`rounded-full px-2 py-0.5 font-medium transition-opacity hover:opacity-75 ${CATEGORY_STYLES[digest.category]}`}
           >
             {digest.category.replace('-', ' ')}
           </span>

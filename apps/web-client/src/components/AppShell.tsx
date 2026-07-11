@@ -185,6 +185,25 @@ export function AppShell({ initialDigests }: { initialDigests: DigestJson[] }) {
 
       {/* Main grid */}
       <main className="min-w-0 flex-1 px-4 pb-10 pt-18 md:px-8 md:pt-8">
+        {/* Mobile chip strip: one-tap filtering without opening the drawer */}
+        <nav
+          className="sticky top-13 z-20 -mx-4 mb-4 flex gap-2 overflow-x-auto bg-canvas/95 px-4 py-2 backdrop-blur md:hidden"
+          aria-label="Filter by category"
+        >
+          {(['All', ...CATEGORIES] as const).map((c) => (
+            <button
+              key={c}
+              onClick={() => setFilter(c)}
+              className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                filter === c
+                  ? 'bg-accent text-canvas'
+                  : 'bg-raised text-ink-dim'
+              }`}
+            >
+              {c === 'All' ? 'All' : c.replace('-', ' ')}
+            </button>
+          ))}
+        </nav>
         {visible.length === 0 ? (
           <div className="mt-8 rounded-lg border border-dashed border-edge-hi p-10 text-center text-sm text-ink-dim">
             {digests.length === 0
@@ -194,12 +213,12 @@ export function AppShell({ initialDigests }: { initialDigests: DigestJson[] }) {
         ) : (
           groupByDay(visible).map((group) => (
             <section key={group.key} className="mb-6">
-              <h2 className="sticky top-14 z-10 -mx-1 mb-3 bg-canvas/95 px-1 py-1 text-xs font-semibold uppercase tracking-wide text-ink-faint backdrop-blur md:top-0">
+              <h2 className="sticky top-24 z-10 -mx-1 mb-3 bg-canvas/95 px-1 py-1 text-xs font-semibold uppercase tracking-wide text-ink-faint backdrop-blur md:top-0">
                 {dayLabel(group.key)}
               </h2>
               <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {group.items.map((d) => (
-                  <DigestCard key={d.dedupHash} digest={d} onOpen={setActive} />
+                  <DigestCard key={d.dedupHash} digest={d} onOpen={setActive} onFilter={setFilter} />
                 ))}
               </ul>
             </section>
@@ -219,7 +238,17 @@ export function AppShell({ initialDigests }: { initialDigests: DigestJson[] }) {
         )}
       </main>
 
-      {active && <DigestModal digest={active} isOwner={isOwner} onClose={() => setActive(null)} />}
+      {active && (
+        <DigestModal
+          digest={active}
+          isOwner={isOwner}
+          onClose={() => setActive(null)}
+          onFilter={(c) => {
+            setFilter(c);
+            setActive(null);
+          }}
+        />
+      )}
     </div>
   );
 }

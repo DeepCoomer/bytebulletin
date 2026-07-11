@@ -48,9 +48,11 @@ commit does. If the repo goes quiet, re-enable the workflow from the Actions tab
    directory" so the build can see `packages/shared`). Framework preset: Next.js.
    If the Nx setup needs it, set the install command to
    `pnpm install --frozen-lockfile` at the repo root.
-3. Environment variables (Production + Preview): `MONGODB_URI` and
+3. Environment variables (Production + Preview): `MONGODB_URI`,
    `OWNER_PASSWORD_HASH` (generate locally with `pnpm auth:hash`, copy the
-   printed hash). The web app does **not** need `GROQ_API_KEY`.
+   printed hash), and `NEXT_PUBLIC_VAPID_PUBLIC_KEY` (same value as the
+   `VAPID_PUBLIC_KEY` GitHub secret — enables push notifications). The web app
+   does **not** need `GROQ_API_KEY` or the VAPID private key.
 4. Deploy — verify the `*.vercel.app` URL renders the feed.
 
 ## 4. Custom domain: `bytebulletin.deepcoomer.dev`
