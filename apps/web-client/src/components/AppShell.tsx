@@ -171,7 +171,7 @@ export function AppShell({ initialDigests }: { initialDigests: DigestJson[] }) {
           ))}
         </nav>
 
-        <div className="border-t border-edge px-5 py-4">
+        <div className="flex items-center justify-between border-t border-edge px-5 py-4">
           <a
             href="https://www.deepcoomer.dev"
             target="_blank"
@@ -179,6 +179,17 @@ export function AppShell({ initialDigests }: { initialDigests: DigestJson[] }) {
             className="text-xs text-ink-faint transition-colors hover:text-accent"
           >
             Built by deepcoomer
+          </a>
+          {/* Needed for installed PWAs (no address bar to type /settings) */}
+          <a
+            href="/settings"
+            aria-label="Settings"
+            className="text-ink-faint transition-colors hover:text-accent"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
           </a>
         </div>
       </aside>

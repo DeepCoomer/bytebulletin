@@ -58,7 +58,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-2xl flex-col gap-4 px-4 py-10">
+    <main className="mx-auto flex min-h-screen max-w-2xl flex-col gap-4 px-4 py-6 sm:py-10">
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-bold">Owner area</h1>
         {state === 'owner' && (
@@ -200,7 +200,7 @@ function NotificationsSection() {
         One push per pipeline run: how many digests landed, plus the top headline. Quiet runs
         send nothing.
       </p>
-      <div className="mt-3 flex items-center gap-3">
+      <div className="mt-3 flex flex-wrap items-center gap-3">
         <button
           onClick={enabled ? disable : enable}
           className={
@@ -259,7 +259,7 @@ function ConfigSection() {
   return (
     <section className={sectionCls}>
       <h2 className={h2Cls}>Pipeline tuning</h2>
-      <div className="mt-3 grid grid-cols-2 gap-3">
+      <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="text-xs text-ink-dim">
           Min score (keep threshold)
           <input
@@ -293,7 +293,7 @@ function ConfigSection() {
           className={`${inputCls} mt-1 font-mono text-xs leading-relaxed`}
         />
       </label>
-      <div className="mt-3 flex items-center gap-3">
+      <div className="mt-3 flex flex-wrap items-center gap-3">
         <button
           onClick={save}
           className="rounded bg-accent px-4 py-2 text-sm font-medium text-canvas transition-opacity hover:opacity-90"
@@ -328,12 +328,15 @@ function RunsSection() {
       ) : (
         <ul className="mt-3 space-y-1.5">
           {runs.map((run) => (
-            <li key={run.startedAt} className="flex items-center gap-3 text-xs text-ink-dim">
+            <li
+              key={run.startedAt}
+              className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-ink-dim"
+            >
               <span
                 className={`h-2 w-2 shrink-0 rounded-full ${run.success ? 'bg-emerald-400' : 'bg-rose-400'}`}
                 title={run.success ? 'success' : 'failed'}
               />
-              <span className="w-32 shrink-0">
+              <span className="shrink-0 font-medium">
                 {new Date(run.startedAt).toLocaleString('en-IN', {
                   month: 'short',
                   day: 'numeric',
@@ -380,12 +383,14 @@ function InsightsSection() {
       <ul className="mt-2 space-y-1">
         {data.byCategory.map((c) => (
           <li key={c._id} className="flex items-center gap-2 text-xs text-ink-dim">
-            <span className="w-40 shrink-0 truncate">{c._id}</span>
-            <span
-              className="h-2 rounded bg-accent/60"
-              style={{ width: `${(c.total / maxTotal) * 100 * 0.6}%` }}
-            />
-            <span className="text-ink-faint">{c.total}</span>
+            <span className="w-28 shrink-0 truncate sm:w-40">{c._id}</span>
+            <span className="h-2 min-w-0 flex-1">
+              <span
+                className="block h-2 rounded bg-accent/60"
+                style={{ width: `${(c.total / maxTotal) * 100}%` }}
+              />
+            </span>
+            <span className="w-6 shrink-0 text-right text-ink-faint">{c.total}</span>
           </li>
         ))}
       </ul>
