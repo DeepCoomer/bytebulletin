@@ -8,6 +8,7 @@ const HnResponseSchema = z.object({
       title: z.string().nullish(),
       url: z.string().nullish(),
       created_at: z.string(),
+      _tags: z.array(z.string()).nullish(),
     }),
   ),
 });
@@ -23,8 +24,10 @@ export async function fetchHackerNews(): Promise<RawItem[]> {
     const res = await http.get(endpoint);
     const { hits } = HnResponseSchema.parse(res.data);
     for (const hit of hits) {
-      // Ask HN / text posts have no external URL — skip them.
+      // Ask HN / text posts have no external URL — skip them. YC job ads carry
+      // the 'job' tag and are never articles.
       if (!hit.title || !hit.url) continue;
+      if (hit._tags?.includes('job')) continue;
       items.push({
         title: hit.title,
         url: hit.url,

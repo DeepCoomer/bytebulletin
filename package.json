@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "Personalized dev-news digest — daily ingestion pipeline + offline-first PWA",
+  "license": "Apache-2.0",
   "scripts": {
     "pipeline:run": "pnpm --filter @bytebulletin/pipeline-worker start",
     "web:dev": "pnpm --filter web-client dev",

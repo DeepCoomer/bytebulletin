@@ -2,6 +2,7 @@ import pLimit from 'p-limit';
 import { MAX_ITEM_AGE_HOURS } from '@bytebulletin/shared';
 import type { Logger } from 'pino';
 import { fetchHackerNews } from './hackernews';
+import { isNoiseTitle } from './noise';
 import { fetchRssFeed } from './rss';
 import type { RawItem } from './types';
 
@@ -31,14 +32,21 @@ export async function fetchAllSources(log: Logger): Promise<RawItem[]> {
   const results = await Promise.allSettled(tasks);
   const cutoff = Date.now() - MAX_ITEM_AGE_HOURS * 3600 * 1000;
   const items: RawItem[] = [];
+  let noiseDropped = 0;
   results.forEach((result, i) => {
     if (result.status === 'rejected') {
       log.warn({ source: names[i], err: String(result.reason) }, 'source failed');
       return;
     }
     for (const item of result.value) {
-      if (item.publishedAt.getTime() >= cutoff) items.push(item);
+      if (item.publishedAt.getTime() < cutoff) continue;
+      if (isNoiseTitle(item.title)) {
+        noiseDropped++;
+        continue;
+      }
+      items.push(item);
     }
   });
+  if (noiseDropped > 0) log.info({ noiseDropped }, 'noise titles filtered');
   return items;
 }

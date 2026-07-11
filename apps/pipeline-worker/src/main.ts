@@ -78,8 +78,9 @@ async function run(): Promise<void> {
           const { text, degraded } = await extractArticle(item);
           counters.extracted++;
           const embedding = await embed(text);
-          // Degraded items were scored on snippet/title only — penalize slightly.
-          const score = cosineSimilarity(embedding, profile) - (degraded ? 0.05 : 0);
+          // Degraded items were scored on snippet/title only — short texts score
+          // erratically, so they must clear a meaningfully higher bar.
+          const score = cosineSimilarity(embedding, profile) - (degraded ? 0.15 : 0);
           scored.push({ item, hash, text, degraded, embedding, score });
         } catch (err) {
           counters.failures++;
