@@ -3,6 +3,15 @@
 All notable changes to ByteBulletin. Follows [SemVer](https://semver.org):
 MAJOR for breaking data/API changes, MINOR for features, PATCH for fixes.
 
+## [1.0.1] — 2026-07-11
+
+### Fixed
+- Feed no longer "reverts" after refresh: SWR stopped revalidating on mount
+  (the edge-cached API could be older than the server-rendered page and was
+  overwriting fresh items); `/api/digests` edge cache shortened to 5 minutes
+- Push notification body now lists the top 3 stored headlines (score-ranked,
+  bulleted) instead of only the single top item
+
 ## [1.0.0] — 2026-07-11
 
 First production release, live at https://bytebulletin.deepcoomer.dev.
