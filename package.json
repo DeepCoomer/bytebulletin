@@ -5,6 +5,7 @@
   "description": "Personalized dev-news digest — daily ingestion pipeline + offline-first PWA",
   "license": "Apache-2.0",
   "scripts": {
+    "auth:hash": "tsx scripts/hash-password.mts",
     "pipeline:run": "pnpm --filter @bytebulletin/pipeline-worker start",
     "web:dev": "pnpm --filter web-client dev",
     "web:build": "pnpm --filter web-client build",
@@ -16,6 +17,7 @@
   "devDependencies": {
     "nx": "^21.2.0",
     "prettier": "^3.6.0",
+    "tsx": "^4.20.0",
     "typescript": "^5.8.0"
   },
   "packageManager": "pnpm@11.10.0",

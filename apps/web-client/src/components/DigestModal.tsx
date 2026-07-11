@@ -4,17 +4,18 @@ import { useEffect, useState } from 'react';
 import type { Interaction } from '@bytebulletin/shared/client';
 import type { DigestJson } from '@/lib/data';
 import { CATEGORY_STYLES, relativeTime } from './DigestCard';
-import { getActionToken } from '@/lib/token';
 
-export function DigestModal({ digest, onClose }: { digest: DigestJson; onClose: () => void }) {
+export function DigestModal({
+  digest,
+  isOwner,
+  onClose,
+}: {
+  digest: DigestJson;
+  isOwner: boolean;
+  onClose: () => void;
+}) {
   const [interaction, setInteraction] = useState<Interaction>(digest.userInteraction);
   const [error, setError] = useState<string | null>(null);
-  // Feedback buttons are owner-only: visitors without a token never see them.
-  const [hasToken, setHasToken] = useState(false);
-
-  useEffect(() => {
-    setHasToken(!!getActionToken());
-  }, []);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
@@ -27,19 +28,20 @@ export function DigestModal({ digest, onClose }: { digest: DigestJson; onClose: 
   }, [onClose]);
 
   async function sendInteraction(next: Interaction) {
-    const token = getActionToken();
     const previous = interaction;
     const value = next === previous ? 'NONE' : next; // tap again to undo
     setInteraction(value);
     setError(null);
     const res = await fetch('/api/interactions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ dedupHash: digest.dedupHash, interaction: value }),
     }).catch(() => null);
     if (!res?.ok) {
       setInteraction(previous);
-      setError(res?.status === 401 ? 'Invalid token.' : 'Failed to save — try again.');
+      setError(
+        res?.status === 401 ? 'Session expired — sign in again in settings.' : 'Failed to save — try again.',
+      );
     }
   }
 
@@ -104,7 +106,7 @@ export function DigestModal({ digest, onClose }: { digest: DigestJson; onClose: 
           Read original →
         </a>
 
-        {hasToken && (
+        {isOwner && (
           <div className="mt-5 flex items-center gap-2 border-t border-edge pt-4">
           <button
             onClick={() => sendInteraction('LIKED')}

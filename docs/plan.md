@@ -55,7 +55,7 @@ Ship a committed `.env.example`.
 |---|---|---|
 | `MONGODB_URI` | both | Atlas connection string |
 | `GROQ_API_KEY` | worker | LLM synthesis |
-| `ACTION_TOKEN` | web | shared secret authorizing like/dislike writes (single-user app; reads are public) |
+| `OWNER_PASSWORD_HASH` | web | scrypt hash of the owner password (`pnpm auth:hash`); verifies login and signs session cookies |
 | `MIN_SCORE` | worker | similarity keep-threshold, default `0.35` |
 
 ## 2. Repository layout (target state)
@@ -239,7 +239,7 @@ morning after a scheduled pipeline run.
 **Accept:** liking several AI-infra articles measurably raises next-run scores for
 similar items (log profile drift in the run summary).
 
-### Phase 8 — Owner dashboard (planned)
+### Phase 8 — Owner dashboard (auth slice DONE 2026-07-11; config/runs/insights pending)
 
 Replace the bearer-token flow with password auth and grow `/settings` into an
 owner panel. Design constraints agreed 2026-07-11:

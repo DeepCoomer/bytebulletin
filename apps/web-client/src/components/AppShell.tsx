@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import useSWR from 'swr';
 import { CATEGORIES, type Category } from '@bytebulletin/shared/client';
 import type { DigestJson } from '@/lib/data';
@@ -27,6 +27,15 @@ export function AppShell({ initialDigests }: { initialDigests: DigestJson[] }) {
   const [filter, setFilter] = useState<Filter>('All');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [active, setActive] = useState<DigestJson | null>(null);
+  // Owner session unlocks feedback buttons; guests see a read-only app.
+  const [isOwner, setIsOwner] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then((r) => r.json())
+      .then((d) => setIsOwner(!!d.owner))
+      .catch(() => {});
+  }, []);
 
   const { data } = useSWR('/api/digests', fetcher, {
     fallbackData: { digests: initialDigests },
@@ -131,7 +140,7 @@ export function AppShell({ initialDigests }: { initialDigests: DigestJson[] }) {
         )}
       </main>
 
-      {active && <DigestModal digest={active} onClose={() => setActive(null)} />}
+      {active && <DigestModal digest={active} isOwner={isOwner} onClose={() => setActive(null)} />}
     </div>
   );
 }

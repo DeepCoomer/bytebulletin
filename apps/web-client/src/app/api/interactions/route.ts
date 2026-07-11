@@ -1,16 +1,8 @@
-import { timingSafeEqual } from 'node:crypto';
 import { NextResponse, type NextRequest } from 'next/server';
 import { InteractionRequestSchema, getDigestsCollection, webEnv } from '@bytebulletin/shared';
+import { SESSION_COOKIE, verifySessionToken } from '@/lib/session';
 
 export const dynamic = 'force-dynamic';
-
-function isAuthorized(req: NextRequest, token: string): boolean {
-  const header = req.headers.get('authorization') ?? '';
-  const provided = header.replace(/^Bearer\s+/i, '');
-  const a = Buffer.from(provided);
-  const b = Buffer.from(token);
-  return a.length === b.length && timingSafeEqual(a, b);
-}
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   let env;
@@ -19,7 +11,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   } catch {
     return NextResponse.json({ error: 'server misconfigured' }, { status: 503 });
   }
-  if (!isAuthorized(req, env.ACTION_TOKEN)) {
+  if (!verifySessionToken(req.cookies.get(SESSION_COOKIE)?.value, env.OWNER_PASSWORD_HASH)) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
 

@@ -37,8 +37,14 @@ pnpm lint               # eslint
 pnpm build              # build everything
 ```
 
-Env vars (see `.env.example`): `MONGODB_URI`, `GROQ_API_KEY`, `ACTION_TOKEN`,
-`MIN_SCORE`. Copy to `.env` locally; never commit real values.
+Env vars (see `.env.example`): `MONGODB_URI`, `GROQ_API_KEY`,
+`OWNER_PASSWORD_HASH` (generate via `pnpm auth:hash`), `MIN_SCORE`. Copy to
+`.env` locally; never commit real values.
+
+Auth model: invisible single-owner auth. Password → scrypt verify →
+HttpOnly session cookie (30d) signed with the hash; owner-only UI (feedback
+buttons) renders only with a session, via `GET /api/auth/me`. Public UI shows
+no login affordance; `/settings` (noindex) is the owner door.
 
 ## Hard rules
 

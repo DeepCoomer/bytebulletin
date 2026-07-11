@@ -48,9 +48,9 @@ commit does. If the repo goes quiet, re-enable the workflow from the Actions tab
    directory" so the build can see `packages/shared`). Framework preset: Next.js.
    If the Nx setup needs it, set the install command to
    `pnpm install --frozen-lockfile` at the repo root.
-3. Environment variables (Production + Preview): `MONGODB_URI`, `ACTION_TOKEN`
-   (generate one: `openssl rand -hex 24`). The web app does **not** need
-   `GROQ_API_KEY`.
+3. Environment variables (Production + Preview): `MONGODB_URI` and
+   `OWNER_PASSWORD_HASH` (generate locally with `pnpm auth:hash`, copy the
+   printed hash). The web app does **not** need `GROQ_API_KEY`.
 4. Deploy — verify the `*.vercel.app` URL renders the feed.
 
 ## 4. Custom domain: `bytebulletin.deepcoomer.dev`
