@@ -15,8 +15,8 @@ out/
 .env.*
 !.env.example
 
-# Owner's private notes — never publish
-PRIVATE-NOTES.md
+# Owner private notes — never publish
+future-plans.md
 
 # Vercel
 .vercel/
