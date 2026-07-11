@@ -37,3 +37,27 @@ export const InteractionRequestSchema = z.object({
   dedupHash: z.string().length(32),
   interaction: InteractionSchema,
 });
+
+/** Owner-tunable pipeline knobs, stored as a singleton doc; every field optional (fallback: code defaults). */
+export const PipelineConfigSchema = z.object({
+  minScore: z.number().min(-1).max(1).optional(),
+  maxSynthesizedPerRun: z.number().int().min(1).max(100).optional(),
+  interestStatements: z.array(z.string().min(3)).min(1).max(20).optional(),
+});
+
+/** One pipeline run's outcome, recorded for the owner dashboard. */
+export const RunSummarySchema = z.object({
+  startedAt: z.coerce.date(),
+  durationMs: z.number().int().min(0),
+  fetched: z.number().int(),
+  deduped: z.number().int(),
+  extracted: z.number().int(),
+  kept: z.number().int(),
+  synthesized: z.number().int(),
+  stored: z.number().int(),
+  failures: z.number().int(),
+  pruned: z.number().int().default(0),
+  likedSignals: z.number().int().default(0),
+  dislikedSignals: z.number().int().default(0),
+  success: z.boolean(),
+});

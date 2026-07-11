@@ -21,6 +21,30 @@ export const LLM_MODEL = 'llama-3.3-70b-versatile';
 
 export const DB_NAME = 'bytebulletin';
 export const DIGESTS_COLLECTION = 'digests';
+export const RUNS_COLLECTION = 'runs';
+export const CONFIG_COLLECTION = 'config';
+export const CONFIG_KEY = 'global';
+
+/** Unliked digests older than this are pruned at the end of each run. */
+export const PRUNE_AFTER_DAYS = 90;
+
+/**
+ * Default developer-interest profile — the centroid of these embeddings is the
+ * base scoring vector. Owner overrides live in the config collection
+ * (dashboard → Interest statements) and take precedence at run time.
+ */
+export const DEFAULT_INTEREST_STATEMENTS: readonly string[] = [
+  'distributed systems trade-offs, consistency models, and consensus protocols',
+  'database internals, indexing strategies, and query optimization',
+  'Next.js, React, and frontend performance optimization case studies',
+  'Node.js and TypeScript backend architecture patterns',
+  'cloud infrastructure scaling, cost engineering, and postmortems',
+  'LLM inference infrastructure, embeddings, and AI system design',
+  'API design, caching strategies, and service reliability engineering',
+  'CI/CD pipelines, containerization, and deployment architecture',
+  'backend engineering: server-side frameworks, message queues, and runtime performance',
+  'Indian technology industry, startup ecosystem, and developer community news',
+];
 
 /** Default cosine-similarity keep-threshold (overridable via MIN_SCORE env). */
 export const DEFAULT_MIN_SCORE = 0.35;

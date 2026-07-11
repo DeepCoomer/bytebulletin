@@ -1,24 +1,6 @@
 import type { Collection } from 'mongodb';
-import type { Digest } from '@bytebulletin/shared';
+import { DEFAULT_INTEREST_STATEMENTS, type Digest } from '@bytebulletin/shared';
 import { embed, meanVector } from './embed';
-
-/**
- * The developer-interest profile. Edit these statements to retune what the
- * pipeline considers "high signal" — the centroid of their embeddings is the
- * base vector every article is scored against, before feedback adjustment.
- */
-export const INTEREST_STATEMENTS: readonly string[] = [
-  'distributed systems trade-offs, consistency models, and consensus protocols',
-  'database internals, indexing strategies, and query optimization',
-  'Next.js, React, and frontend performance optimization case studies',
-  'Node.js and TypeScript backend architecture patterns',
-  'cloud infrastructure scaling, cost engineering, and postmortems',
-  'LLM inference infrastructure, embeddings, and AI system design',
-  'API design, caching strategies, and service reliability engineering',
-  'CI/CD pipelines, containerization, and deployment architecture',
-  'backend engineering: server-side frameworks, message queues, and runtime performance',
-  'Indian technology industry, startup ecosystem, and developer community news',
-];
 
 /** Only interactions this recent influence the profile. */
 const FEEDBACK_WINDOW_DAYS = 60;
@@ -58,8 +40,11 @@ export interface ProfileResult {
  * feedback when a collection is provided (embeddings were stored per digest at
  * ingestion time — no re-vectorization happens here).
  */
-export async function getProfileVector(digests?: Collection<Digest>): Promise<ProfileResult> {
-  const statementVectors = await Promise.all(INTEREST_STATEMENTS.map((s) => embed(s)));
+export async function getProfileVector(
+  digests?: Collection<Digest>,
+  statements: readonly string[] = DEFAULT_INTEREST_STATEMENTS,
+): Promise<ProfileResult> {
+  const statementVectors = await Promise.all(statements.map((s) => embed(s)));
   const base = meanVector(statementVectors);
   if (!digests) return { vector: base, likedSignals: 0, dislikedSignals: 0 };
 

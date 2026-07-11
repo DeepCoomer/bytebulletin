@@ -5,6 +5,8 @@ import type {
   DigestSchema,
   InteractionSchema,
   LlmOutputSchema,
+  PipelineConfigSchema,
+  RunSummarySchema,
   SummarySchema,
 } from './schemas';
 
@@ -14,3 +16,5 @@ export type Summary = z.infer<typeof SummarySchema>;
 export type LlmOutput = z.infer<typeof LlmOutputSchema>;
 export type Digest = z.infer<typeof DigestSchema>;
 export type DigestApi = z.infer<typeof DigestApiSchema>;
+export type PipelineConfig = z.infer<typeof PipelineConfigSchema>;
+export type RunSummary = z.infer<typeof RunSummarySchema>;

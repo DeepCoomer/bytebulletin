@@ -239,7 +239,7 @@ morning after a scheduled pipeline run.
 **Accept:** liking several AI-infra articles measurably raises next-run scores for
 similar items (log profile drift in the run summary).
 
-### Phase 8 — Owner dashboard (auth slice DONE 2026-07-11; config/runs/insights pending)
+### Phase 8 — Owner dashboard (DONE 2026-07-11)
 
 Replace the bearer-token flow with password auth and grow `/settings` into an
 owner panel. Design constraints agreed 2026-07-11:
@@ -267,7 +267,7 @@ password prompt, no explanation. A session unlocks owner features inside the
 normal UI (feedback buttons, Stocks tab, dashboard tabs); without one, those
 features neither render nor exist at the API level (401/empty).
 
-### Phase 9 — Feed archive ergonomics (planned)
+### Phase 9 — Feed archive ergonomics (DONE 2026-07-11)
 
 - Day-group headers in the feed (Today / Yesterday / date) instead of a date
   filter; "Load older" pagination past the first 100 (API `?before=` cursor).

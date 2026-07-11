@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import useSWR from 'swr';
 import { CATEGORIES, type Category } from '@bytebulletin/shared/client';
 import type { DigestJson } from '@/lib/data';
-import { DigestCard } from './DigestCard';
+import { DigestCard, relativeTime } from './DigestCard';
 import { DigestModal } from './DigestModal';
 
 type Filter = Category | 'All';
@@ -13,6 +13,34 @@ async function fetcher(url: string): Promise<{ digests: DigestJson[] }> {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`fetch failed: ${res.status}`);
   return res.json();
+}
+
+// UTC day keys: deterministic across server and client, so SSR never mismatches.
+function dayKey(iso: string): string {
+  return iso.slice(0, 10);
+}
+
+function dayLabel(key: string): string {
+  const todayKey = new Date().toISOString().slice(0, 10);
+  if (key === todayKey) return 'Today';
+  const yesterdayKey = new Date(Date.now() - 86400_000).toISOString().slice(0, 10);
+  if (key === yesterdayKey) return 'Yesterday';
+  return new Date(`${key}T00:00:00Z`).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'UTC',
+  });
+}
+
+function groupByDay(digests: DigestJson[]): Array<{ key: string; items: DigestJson[] }> {
+  const groups: Array<{ key: string; items: DigestJson[] }> = [];
+  for (const d of digests) {
+    const key = dayKey(d.createdAt);
+    const last = groups[groups.length - 1];
+    if (last?.key === key) last.items.push(d);
+    else groups.push({ key, items: [d] });
+  }
+  return groups;
 }
 
 function Logo() {
@@ -37,11 +65,38 @@ export function AppShell({ initialDigests }: { initialDigests: DigestJson[] }) {
       .catch(() => {});
   }, []);
 
+  // Older pages accumulate locally; exhausted = last page came back short.
+  const [older, setOlder] = useState<DigestJson[]>([]);
+  const [loadingOlder, setLoadingOlder] = useState(false);
+  const [exhausted, setExhausted] = useState(false);
+
   const { data } = useSWR('/api/digests', fetcher, {
     fallbackData: { digests: initialDigests },
     revalidateOnFocus: false,
   });
-  const digests = data?.digests ?? [];
+
+  const digests = useMemo(() => {
+    const seen = new Set<string>();
+    return [...(data?.digests ?? []), ...older].filter((d) =>
+      seen.has(d.dedupHash) ? false : (seen.add(d.dedupHash), true),
+    );
+  }, [data, older]);
+
+  async function loadOlder() {
+    const oldest = digests[digests.length - 1];
+    if (!oldest || loadingOlder) return;
+    setLoadingOlder(true);
+    try {
+      const res = await fetch(`/api/digests?before=${encodeURIComponent(oldest.createdAt)}`);
+      const body: { digests: DigestJson[] } = await res.json();
+      setOlder((prev) => [...prev, ...body.digests]);
+      if (body.digests.length < 100) setExhausted(true);
+    } catch {
+      // leave the button available for retry
+    } finally {
+      setLoadingOlder(false);
+    }
+  }
 
   const counts = useMemo(() => {
     const map = new Map<Filter, number>([['All', digests.length]]);
@@ -92,6 +147,11 @@ export function AppShell({ initialDigests }: { initialDigests: DigestJson[] }) {
         <div className="px-5 py-5">
           <Logo />
           <p className="mt-1 text-xs text-ink-faint">High-signal engineering news, daily.</p>
+          {digests[0] && (
+            <p className="mt-1 text-xs text-ink-faint">
+              Updated {relativeTime(digests[0].createdAt)}
+            </p>
+          )}
         </div>
 
         <nav className="flex-1 space-y-0.5 overflow-y-auto px-3" aria-label="Categories">
@@ -132,11 +192,30 @@ export function AppShell({ initialDigests }: { initialDigests: DigestJson[] }) {
               : 'Nothing in this category right now.'}
           </div>
         ) : (
-          <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {visible.map((d) => (
-              <DigestCard key={d.dedupHash} digest={d} onOpen={setActive} />
-            ))}
-          </ul>
+          groupByDay(visible).map((group) => (
+            <section key={group.key} className="mb-6">
+              <h2 className="sticky top-14 z-10 -mx-1 mb-3 bg-canvas/95 px-1 py-1 text-xs font-semibold uppercase tracking-wide text-ink-faint backdrop-blur md:top-0">
+                {dayLabel(group.key)}
+              </h2>
+              <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                {group.items.map((d) => (
+                  <DigestCard key={d.dedupHash} digest={d} onOpen={setActive} />
+                ))}
+              </ul>
+            </section>
+          ))
+        )}
+
+        {digests.length > 0 && !exhausted && (
+          <div className="mt-2 text-center">
+            <button
+              onClick={loadOlder}
+              disabled={loadingOlder}
+              className="rounded-md bg-raised px-4 py-2 text-sm text-ink-dim transition-colors hover:bg-edge-hi hover:text-ink disabled:opacity-40"
+            >
+              {loadingOlder ? 'Loading…' : 'Load older'}
+            </button>
+          </div>
         )}
       </main>
 

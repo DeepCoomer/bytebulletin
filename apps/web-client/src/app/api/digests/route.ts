@@ -1,11 +1,17 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import { getDigests } from '@/lib/data';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
-    const digests = await getDigests();
+    // ?before=<ISO date> pages into the archive (exclusive cursor).
+    const beforeParam = req.nextUrl.searchParams.get('before');
+    const before = beforeParam ? new Date(beforeParam) : undefined;
+    if (before && Number.isNaN(before.getTime())) {
+      return NextResponse.json({ error: 'invalid before cursor' }, { status: 400 });
+    }
+    const digests = await getDigests(before);
     return NextResponse.json(
       { digests },
       {

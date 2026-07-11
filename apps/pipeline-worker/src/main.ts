@@ -5,8 +5,11 @@ import { pino } from 'pino';
 import {
   DigestSchema,
   MAX_SYNTHESIZED_PER_RUN,
+  PRUNE_AFTER_DAYS,
   ensureIndexes,
   getDigestsCollection,
+  getRunsCollection,
+  loadPipelineConfig,
   closeMongoClient,
   workerEnv,
   type Digest,
@@ -41,6 +44,15 @@ async function run(): Promise<void> {
   const digests = await getDigestsCollection(env.MONGODB_URI);
   await ensureIndexes(env.MONGODB_URI);
 
+  // Owner overrides from the dashboard beat env/code defaults.
+  const config = await loadPipelineConfig(env.MONGODB_URI);
+  const minScore = config.minScore ?? env.MIN_SCORE;
+  const maxSynthesized = config.maxSynthesizedPerRun ?? MAX_SYNTHESIZED_PER_RUN;
+  log.info(
+    { minScore, maxSynthesized, customStatements: config.interestStatements?.length ?? 0 },
+    'config loaded',
+  );
+
   const counters = {
     fetched: 0,
     deduped: 0,
@@ -49,6 +61,7 @@ async function run(): Promise<void> {
     synthesized: 0,
     stored: 0,
     failures: 0,
+    pruned: 0,
   };
 
   // 1. Ingest
@@ -68,7 +81,10 @@ async function run(): Promise<void> {
   log.info({ fresh: fresh.length, deduped: counters.deduped }, 'dedup complete');
 
   // 3+4. Extract and score (embedding model is a process singleton; fetches are limited).
-  const { vector: profile, likedSignals, dislikedSignals } = await getProfileVector(digests);
+  const { vector: profile, likedSignals, dislikedSignals } = await getProfileVector(
+    digests,
+    config.interestStatements,
+  );
   log.info({ likedSignals, dislikedSignals }, 'profile ready (feedback applied)');
   const extractLimit = pLimit(5);
   const scored: ScoredItem[] = [];
@@ -92,11 +108,11 @@ async function run(): Promise<void> {
   );
 
   const kept = scored
-    .filter((s) => s.score >= env.MIN_SCORE)
+    .filter((s) => s.score >= minScore)
     .sort((a, b) => b.score - a.score)
-    .slice(0, MAX_SYNTHESIZED_PER_RUN);
+    .slice(0, maxSynthesized);
   counters.kept = kept.length;
-  log.info({ scored: scored.length, kept: kept.length, minScore: env.MIN_SCORE }, 'scoring complete');
+  log.info({ scored: scored.length, kept: kept.length, minScore }, 'scoring complete');
 
   // 5+6. Synthesize and store. Serial: Groq free tier is 12k tokens/min and a
   // full article is ~3k — parallel calls just trade 429 retries for throughput.
@@ -128,6 +144,14 @@ async function run(): Promise<void> {
     ),
   );
 
+  // 7. Prune old, never-liked digests so the free tier never fills.
+  const pruneCutoff = new Date(Date.now() - PRUNE_AFTER_DAYS * 86400 * 1000);
+  const pruneRes = await digests.deleteMany({
+    createdAt: { $lt: pruneCutoff },
+    userInteraction: 'NONE',
+  });
+  counters.pruned = pruneRes.deletedCount;
+
   const durationMs = Date.now() - startedAt;
   log.info({ ...counters, durationMs }, 'run summary');
 
@@ -141,6 +165,21 @@ async function run(): Promise<void> {
   } else if (counters.kept > 0 && counters.stored === 0) {
     process.exitCode = 1;
     log.error('all kept items failed synthesis/storage — check Groq/Mongo');
+  }
+
+  // 8. Record the run for the owner dashboard (best-effort).
+  try {
+    const runs = await getRunsCollection(env.MONGODB_URI);
+    await runs.insertOne({
+      startedAt: new Date(startedAt),
+      durationMs,
+      ...counters,
+      likedSignals,
+      dislikedSignals,
+      success: process.exitCode !== 1,
+    });
+  } catch (err) {
+    log.warn({ err: String(err) }, 'failed to record run summary');
   }
 }
 
