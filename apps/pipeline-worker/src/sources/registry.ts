@@ -36,7 +36,7 @@ export async function fetchAllSources(log: Logger): Promise<RawItem[]> {
     ...RSS_FEEDS.map((feed) => limit(() => fetchRssFeed(feed.url, feed.name))),
     ...REDDIT_SUBS.map((sub) =>
       redditLimit(async () => {
-        await sleep(1500);
+        await sleep(5000);
         return fetchReddit(sub);
       }),
     ),
