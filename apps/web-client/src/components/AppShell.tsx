@@ -7,7 +7,7 @@ import type { DigestJson } from '@/lib/data';
 import { DigestCard, relativeTime } from './DigestCard';
 import { DigestModal } from './DigestModal';
 
-type Filter = Category | 'All';
+type Filter = Category | 'All' | 'Saved';
 
 async function fetcher(url: string): Promise<{ digests: DigestJson[] }> {
   const res = await fetch(url);
@@ -70,7 +70,7 @@ export function AppShell({ initialDigests }: { initialDigests: DigestJson[] }) {
   const [loadingOlder, setLoadingOlder] = useState(false);
   const [exhausted, setExhausted] = useState(false);
 
-  const { data } = useSWR('/api/digests', fetcher, {
+  const { data, mutate } = useSWR('/api/digests', fetcher, {
     fallbackData: { digests: initialDigests },
     revalidateOnFocus: false,
   });
@@ -81,6 +81,19 @@ export function AppShell({ initialDigests }: { initialDigests: DigestJson[] }) {
       seen.has(d.dedupHash) ? false : (seen.add(d.dedupHash), true),
     );
   }, [data, older]);
+
+  /** Reflect modal-side changes (save/unsave) into both digest stores without a refetch. */
+  function updateDigest(dedupHash: string, patch: Partial<DigestJson>) {
+    const apply = (list: DigestJson[]) =>
+      list.map((d) => (d.dedupHash === dedupHash ? { ...d, ...patch } : d));
+    mutate((current) => (current ? { digests: apply(current.digests) } : current), {
+      revalidate: false,
+    });
+    setOlder(apply);
+    setActive((current) =>
+      current?.dedupHash === dedupHash ? { ...current, ...patch } : current,
+    );
+  }
 
   async function loadOlder() {
     const oldest = digests[digests.length - 1];
@@ -100,11 +113,24 @@ export function AppShell({ initialDigests }: { initialDigests: DigestJson[] }) {
 
   const counts = useMemo(() => {
     const map = new Map<Filter, number>([['All', digests.length]]);
-    for (const d of digests) map.set(d.category, (map.get(d.category) ?? 0) + 1);
+    for (const d of digests) {
+      map.set(d.category, (map.get(d.category) ?? 0) + 1);
+      if (d.saved) map.set('Saved', (map.get('Saved') ?? 0) + 1);
+    }
     return map;
   }, [digests]);
 
-  const visible = filter === 'All' ? digests : digests.filter((d) => d.category === filter);
+  // Saved is owner-only: the flag is the owner's bookmark list.
+  const filters: readonly Filter[] = isOwner
+    ? ['All', 'Saved', ...CATEGORIES]
+    : ['All', ...CATEGORIES];
+
+  const visible =
+    filter === 'All'
+      ? digests
+      : filter === 'Saved'
+        ? digests.filter((d) => d.saved)
+        : digests.filter((d) => d.category === filter);
 
   function selectFilter(f: Filter) {
     setFilter(f);
@@ -155,7 +181,7 @@ export function AppShell({ initialDigests }: { initialDigests: DigestJson[] }) {
         </div>
 
         <nav className="flex-1 space-y-0.5 overflow-y-auto px-3" aria-label="Categories">
-          {(['All', ...CATEGORIES] as const).map((c) => (
+          {filters.map((c) => (
             <button
               key={c}
               onClick={() => selectFilter(c)}
@@ -165,7 +191,7 @@ export function AppShell({ initialDigests }: { initialDigests: DigestJson[] }) {
                   : 'text-ink-dim hover:bg-raised hover:text-ink'
               }`}
             >
-              <span>{c === 'All' ? 'All' : c.replace('-', ' ')}</span>
+              <span>{c === 'Saved' ? '🔖 Saved' : c === 'All' ? 'All' : c.replace('-', ' ')}</span>
               <span className="text-xs text-ink-faint">{counts.get(c) ?? 0}</span>
             </button>
           ))}
@@ -201,7 +227,7 @@ export function AppShell({ initialDigests }: { initialDigests: DigestJson[] }) {
           className="sticky top-13 z-20 -mx-4 mb-4 flex gap-2 overflow-x-auto bg-canvas/95 px-4 py-2 backdrop-blur md:hidden"
           aria-label="Filter by category"
         >
-          {(['All', ...CATEGORIES] as const).map((c) => (
+          {filters.map((c) => (
             <button
               key={c}
               onClick={() => setFilter(c)}
@@ -211,7 +237,7 @@ export function AppShell({ initialDigests }: { initialDigests: DigestJson[] }) {
                   : 'bg-raised text-ink-dim'
               }`}
             >
-              {c === 'All' ? 'All' : c.replace('-', ' ')}
+              {c === 'Saved' ? '🔖 Saved' : c === 'All' ? 'All' : c.replace('-', ' ')}
             </button>
           ))}
         </nav>
@@ -254,6 +280,7 @@ export function AppShell({ initialDigests }: { initialDigests: DigestJson[] }) {
           digest={active}
           isOwner={isOwner}
           onClose={() => setActive(null)}
+          onUpdate={updateDigest}
           onFilter={(c) => {
             setFilter(c);
             setActive(null);

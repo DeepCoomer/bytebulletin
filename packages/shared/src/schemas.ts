@@ -25,6 +25,7 @@ export const DigestSchema = z.object({
   summary: SummarySchema,
   embedding: z.array(z.number()).length(EMBEDDING_DIM),
   userInteraction: InteractionSchema.default('NONE'),
+  saved: z.boolean().default(false),
   createdAt: z.date(),
 });
 
@@ -36,6 +37,11 @@ export const DigestApiSchema = DigestSchema.omit({ embedding: true }).extend({
 export const InteractionRequestSchema = z.object({
   dedupHash: z.string().length(32),
   interaction: InteractionSchema,
+});
+
+export const SavedRequestSchema = z.object({
+  dedupHash: z.string().length(32),
+  saved: z.boolean(),
 });
 
 /** Owner-tunable pipeline knobs, stored as a singleton doc; every field optional (fallback: code defaults). */

@@ -156,6 +156,7 @@ async function run(): Promise<void> {
   const pruneRes = await digests.deleteMany({
     createdAt: { $lt: pruneCutoff },
     userInteraction: 'NONE',
+    saved: { $ne: true },
   });
   counters.pruned = pruneRes.deletedCount;
 

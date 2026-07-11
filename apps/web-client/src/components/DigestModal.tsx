@@ -10,13 +10,16 @@ export function DigestModal({
   isOwner,
   onClose,
   onFilter,
+  onUpdate,
 }: {
   digest: DigestJson;
   isOwner: boolean;
   onClose: () => void;
   onFilter?: (category: Category) => void;
+  onUpdate?: (dedupHash: string, patch: Partial<DigestJson>) => void;
 }) {
   const [interaction, setInteraction] = useState<Interaction>(digest.userInteraction);
+  const [saved, setSaved] = useState<boolean>(!!digest.saved);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -45,6 +48,23 @@ export function DigestModal({
         res?.status === 401 ? 'Session expired — sign in again in settings.' : 'Failed to save — try again.',
       );
     }
+  }
+
+  async function toggleSaved() {
+    const value = !saved;
+    setSaved(value);
+    setError(null);
+    const res = await fetch('/api/saved', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ dedupHash: digest.dedupHash, saved: value }),
+    }).catch(() => null);
+    if (!res?.ok) {
+      setSaved(!value);
+      setError(res?.status === 401 ? 'Session expired — sign in again in settings.' : 'Failed to save — try again.');
+      return;
+    }
+    onUpdate?.(digest.dedupHash, { saved: value });
   }
 
   return (
@@ -111,7 +131,18 @@ export function DigestModal({
         </a>
 
         {isOwner && (
-          <div className="mt-5 flex items-center gap-2 border-t border-edge pt-4">
+          <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-edge pt-4">
+            <button
+              onClick={toggleSaved}
+              aria-pressed={saved}
+              className={`rounded px-2 py-1 text-xs transition-colors ${
+                saved
+                  ? 'bg-accent/20 text-accent'
+                  : 'bg-raised text-ink-dim hover:bg-edge-hi hover:text-ink'
+              }`}
+            >
+              {saved ? '🔖 Saved' : '🔖 Save'}
+            </button>
           <button
             onClick={() => sendInteraction('LIKED')}
             aria-pressed={interaction === 'LIKED'}

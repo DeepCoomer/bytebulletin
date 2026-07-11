@@ -34,6 +34,10 @@ describe('DigestSchema', () => {
     expect(DigestSchema.parse(rest).userInteraction).toBe('NONE');
   });
 
+  it('defaults saved to false', () => {
+    expect(DigestSchema.parse(validDigest).saved).toBe(false);
+  });
+
   it('rejects wrong embedding dimension', () => {
     expect(() => DigestSchema.parse({ ...validDigest, embedding: [0.1, 0.2] })).toThrow();
   });
