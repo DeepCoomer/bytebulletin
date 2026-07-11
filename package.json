@@ -1,6 +1,6 @@
 {
   "name": "bytebulletin",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Personalized dev-news digest — daily ingestion pipeline + offline-first PWA",
   "license": "Apache-2.0",
