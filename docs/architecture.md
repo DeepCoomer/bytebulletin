@@ -41,7 +41,7 @@ Two decoupled apps in one Nx + pnpm monorepo, sharing only `packages/shared`
 
 ```
  [ Ingestion Sources ]
- (HN Algolia, RSS: Cloudflare/Netflix/Uber/Stripe/…, Lobsters)
+ (HN Algolia · engineering-blog RSS · Lobsters · Reddit top/day)
           │
           ▼
 ┌────────────────────────────────────────────────────────┐
@@ -178,9 +178,10 @@ OUTPUT JSON SCHEMA:
   (hardcoded in `apps/pipeline-worker/src/profile.ts`), L2-normalized.
 - **Scoring**: dot product of normalized vectors (= cosine similarity). Keep
   `score >= MIN_SCORE` (default 0.35), then take the top 30.
-- **Feedback loop (post-MVP)**: Rocchio update from like/dislike interactions —
-  `profile' = normalize(profile + 0.4·mean(liked) − 0.2·mean(disliked))` over the
-  trailing 60 days, applied at the start of each run.
+- **Feedback loop (live since 2026-07-11)**: Rocchio update from like/dislike
+  interactions — `profile' = normalize(profile + 0.4·mean(liked) − 0.2·mean(disliked))`
+  over the trailing 60 days, applied at the start of each run using the embeddings
+  stored per digest at ingestion time (`applyFeedback` in `profile.ts`).
 
 ## 6. Reconciliation notes for AI dev tools (Cursor / Claude Code)
 

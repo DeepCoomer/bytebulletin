@@ -227,7 +227,7 @@ Spaceship.
 **Accept:** `https://bytebulletin.deepcoomer.dev` serves the feed over HTTPS the
 morning after a scheduled pipeline run.
 
-### Phase 7 — Feedback personalization (post-MVP)
+### Phase 7 — Feedback personalization (DONE 2026-07-11)
 
 - At the start of each pipeline run, fetch docs with `userInteraction != NONE` from
   the last 60 days and apply Rocchio-style adjustment:

@@ -16,10 +16,11 @@ Single-user, privacy-first, $0/month infrastructure.
 An Nx + pnpm monorepo with two decoupled apps and one shared package:
 
 - `apps/pipeline-worker` — Node/TS CLI, run daily by GitHub Actions cron. Ingests
-  HN + engineering-blog RSS → dedups by MD5 title hash → extracts article text
-  (Readability) → scores with local MiniLM embeddings vs an interest-profile
-  centroid → summarizes top items via Groq (JSON mode) → idempotent upserts into
-  MongoDB Atlas.
+  HN + engineering-blog RSS + Reddit top/day → dedups by MD5 title hash → extracts
+  article text (Readability) → scores with local MiniLM embeddings vs an
+  interest-profile centroid (Rocchio-adjusted by recent likes/dislikes) →
+  summarizes top items via Groq (JSON mode) → idempotent upserts into MongoDB
+  Atlas.
 - `apps/web-client` — Next.js 15 App Router PWA on Vercel. Edge-cached
   `GET /api/digests`, token-guarded `POST /api/interactions`, Serwist service
   worker for offline reading.

@@ -3,6 +3,7 @@ import { MAX_ITEM_AGE_HOURS } from '@bytebulletin/shared';
 import type { Logger } from 'pino';
 import { fetchHackerNews } from './hackernews';
 import { isNoiseTitle } from './noise';
+import { fetchReddit } from './reddit';
 import { fetchRssFeed } from './rss';
 import type { RawItem } from './types';
 
@@ -17,6 +18,9 @@ export const RSS_FEEDS: ReadonlyArray<{ name: string; url: string }> = [
   { name: 'Lobsters', url: 'https://lobste.rs/rss' },
 ];
 
+/** Daily top posts; discussions and links both flow through scoring like any item. */
+export const REDDIT_SUBS: readonly string[] = ['programming', 'ExperiencedDevs'];
+
 /**
  * Fetch every source with per-source fault isolation: a dead feed logs a warning
  * and contributes nothing. Items older than MAX_ITEM_AGE_HOURS are dropped.
@@ -26,8 +30,13 @@ export async function fetchAllSources(log: Logger): Promise<RawItem[]> {
   const tasks: Array<Promise<RawItem[]>> = [
     limit(() => fetchHackerNews()),
     ...RSS_FEEDS.map((feed) => limit(() => fetchRssFeed(feed.url, feed.name))),
+    ...REDDIT_SUBS.map((sub) => limit(() => fetchReddit(sub))),
   ];
-  const names = ['Hacker News', ...RSS_FEEDS.map((f) => f.name)];
+  const names = [
+    'Hacker News',
+    ...RSS_FEEDS.map((f) => f.name),
+    ...REDDIT_SUBS.map((s) => `r/${s}`),
+  ];
 
   const results = await Promise.allSettled(tasks);
   const cutoff = Date.now() - MAX_ITEM_AGE_HOURS * 3600 * 1000;

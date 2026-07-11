@@ -68,7 +68,8 @@ async function run(): Promise<void> {
   log.info({ fresh: fresh.length, deduped: counters.deduped }, 'dedup complete');
 
   // 3+4. Extract and score (embedding model is a process singleton; fetches are limited).
-  const profile = await getProfileVector();
+  const { vector: profile, likedSignals, dislikedSignals } = await getProfileVector(digests);
+  log.info({ likedSignals, dislikedSignals }, 'profile ready (feedback applied)');
   const extractLimit = pLimit(5);
   const scored: ScoredItem[] = [];
   await Promise.all(
