@@ -118,7 +118,7 @@ async function run(): Promise<void> {
   // 5+6. Synthesize and store. Serial: Groq free tier is 12k tokens/min and a
   // full article is ~3k — parallel calls just trade 429 retries for throughput.
   const llmLimit = pLimit(1);
-  let topStored: { title: string; score: number } | undefined;
+  const storedItems: Array<{ title: string; score: number }> = [];
   await Promise.all(
     kept.map((s) =>
       llmLimit(async () => {
@@ -139,9 +139,7 @@ async function run(): Promise<void> {
           });
           if (await storeDigest(digests, digest)) {
             counters.stored++;
-            if (!topStored || s.score > topStored.score) {
-              topStored = { title: s.item.title, score: s.score };
-            }
+            storedItems.push({ title: s.item.title, score: s.score });
           }
         } catch (err) {
           counters.failures++;
@@ -177,7 +175,8 @@ async function run(): Promise<void> {
 
   // 8. Notify owner devices (best-effort; silent on quiet runs).
   try {
-    await sendRunNotification(env, log, { stored: counters.stored, topTitle: topStored?.title });
+    const topTitles = storedItems.sort((a, b) => b.score - a.score).map((s) => s.title);
+    await sendRunNotification(env, log, { stored: counters.stored, topTitles });
   } catch (err) {
     log.warn({ err: String(err) }, 'push notification step failed');
   }

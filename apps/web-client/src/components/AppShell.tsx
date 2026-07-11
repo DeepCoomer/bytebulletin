@@ -70,9 +70,13 @@ export function AppShell({ initialDigests }: { initialDigests: DigestJson[] }) {
   const [loadingOlder, setLoadingOlder] = useState(false);
   const [exhausted, setExhausted] = useState(false);
 
+  // Server-rendered data is always fresher than the edge-cached API, so never
+  // revalidate on mount — a stale API hit would overwrite newer items. SWR here
+  // is the client-side cache we patch (saves, older pages), not a refetcher.
   const { data, mutate } = useSWR('/api/digests', fetcher, {
     fallbackData: { digests: initialDigests },
     revalidateOnFocus: false,
+    revalidateOnMount: false,
   });
 
   const digests = useMemo(() => {

@@ -4,7 +4,8 @@ import type { Logger } from 'pino';
 
 export interface RunNotification {
   stored: number;
-  topTitle?: string;
+  /** Highest-scored stored titles, best first — up to 3 shown in the body. */
+  topTitles: string[];
 }
 
 /**
@@ -15,7 +16,7 @@ export interface RunNotification {
 export async function sendRunNotification(
   env: WorkerEnv,
   log: Logger,
-  { stored, topTitle }: RunNotification,
+  { stored, topTitles }: RunNotification,
 ): Promise<void> {
   if (stored === 0) return;
   if (!env.VAPID_PUBLIC_KEY || !env.VAPID_PRIVATE_KEY) {
@@ -27,9 +28,14 @@ export async function sendRunNotification(
   if (subs.length === 0) return;
 
   webpush.setVapidDetails(env.VAPID_SUBJECT, env.VAPID_PUBLIC_KEY, env.VAPID_PRIVATE_KEY);
+  const body =
+    topTitles
+      .slice(0, 3)
+      .map((t) => `• ${t.length > 72 ? `${t.slice(0, 71)}…` : t}`)
+      .join('\n') || 'Fresh engineering news is ready.';
   const payload = JSON.stringify({
     title: `ByteBulletin: ${stored} new digest${stored === 1 ? '' : 's'}`,
-    body: topTitle ?? 'Fresh engineering news is ready.',
+    body,
     url: '/',
   });
 

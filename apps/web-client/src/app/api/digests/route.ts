@@ -16,8 +16,9 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       { digests },
       {
         headers: {
-          // Data changes once a day — let Vercel's edge cache absorb reads.
-          'Cache-Control': 's-maxage=3600, stale-while-revalidate=86400',
+          // Short edge cache: absorbs read bursts without serving stale data
+          // long after a pipeline run lands new digests.
+          'Cache-Control': 's-maxage=300, stale-while-revalidate=3600',
         },
       },
     );
