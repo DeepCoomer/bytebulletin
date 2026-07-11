@@ -261,6 +261,36 @@ owner panel. Design constraints agreed 2026-07-11:
 Build order: auth + cookie first (smallest useful slice), then config, runs,
 insights as separate increments.
 
+**Auth UX (agreed 2026-07-11): invisible auth.** The public UI shows no login
+affordance anywhere. `/settings` (unlisted, noindex) is the owner door: a bare
+password prompt, no explanation. A session unlocks owner features inside the
+normal UI (feedback buttons, Stocks tab, dashboard tabs); without one, those
+features neither render nor exist at the API level (401/empty).
+
+### Phase 9 — Feed archive ergonomics (planned)
+
+- Day-group headers in the feed (Today / Yesterday / date) instead of a date
+  filter; "Load older" pagination past the first 100 (API `?before=` cursor).
+- Auto-prune digests older than 90 days at the end of each pipeline run.
+- "Last updated" indicator in the sidebar from the newest digest timestamp.
+
+### Phase 10 — Stocks briefing module (planned, owner-only)
+
+A second pipeline reusing the same pattern, framed strictly as a research
+briefing — an LLM organizing indicators + news, not a trading signal.
+
+- Worker module on its own schedule (post-market close): fetch watchlist OHLC +
+  basic indicators (free tier: Finnhub or Alpha Vantage) and ticker-filtered
+  news RSS → LLM synthesis into strict JSON
+  (`ticker, signals, newsSummary, bullCase, bearCase, stance`) → `stocks`
+  collection.
+- Owner-only Stocks tab (requires Phase 8 session); invisible to visitors at
+  both UI and API level.
+- **Notifications via a private Telegram bot** (chosen over Web Push for
+  reliability/simplicity): worker posts run results / stock alerts to the
+  owner's chat; also used to red-alert pipeline failures. Web Push optional
+  later.
+
 ## 4. Operating rules for AI-assisted implementation
 
 - Zod-validate **every** boundary: env at startup, LLM output, API request/response.
