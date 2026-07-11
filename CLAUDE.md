@@ -74,8 +74,11 @@ no login affordance; `/settings` (noindex) is the owner door.
 - **Digest** — one processed article document in Mongo (`digests` collection).
 - **Category** — exactly: `Architecture`, `Frontend-Performance`,
   `AI-Infrastructure`, `DevOps-Cloud`, `Databases-Storage`, `Security`,
-  `Languages-Runtimes`, `Open-Source-Tools`, `Trending-Discussions`,
-  `General-Tech` (defined once in `packages/shared/src/constants.ts`).
+  `Languages-Runtimes`, `Backend-Engineering`, `Open-Source-Tools`,
+  `Trending-Discussions`, `India-Tech`, `General-Tech` (defined once in
+  `packages/shared/src/constants.ts`; UI badge colors in `DigestCard.tsx` and
+  the LLM prompt in `synthesize.ts` + architecture.md §4 must list the same
+  set).
 - **Score** — cosine similarity (−1..1) of article embedding vs profile centroid;
   keep-threshold `MIN_SCORE` (default 0.35), top 30 per run go to the LLM.
 - **dedupHash** — `md5(title.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim())`,

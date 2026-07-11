@@ -11,8 +11,10 @@ export const CATEGORY_STYLES: Record<Category, string> = {
   'Databases-Storage': 'bg-amber-400/10 text-amber-300',
   Security: 'bg-rose-400/10 text-rose-300',
   'Languages-Runtimes': 'bg-cyan-400/10 text-cyan-300',
+  'Backend-Engineering': 'bg-teal-400/10 text-teal-300',
   'Open-Source-Tools': 'bg-lime-400/10 text-lime-300',
   'Trending-Discussions': 'bg-orange-400/10 text-orange-300',
+  'India-Tech': 'bg-yellow-400/10 text-yellow-300',
   'General-Tech': 'bg-edge-hi/50 text-ink-dim',
 };
 

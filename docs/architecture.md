@@ -103,7 +103,7 @@ Collection `digests`. Canonical runtime validation is the Zod `DigestSchema` in
         "description": "Cosine similarity of article embedding vs developer-profile centroid, [-1, 1]"
       },
       "category": {
-        "enum": ["Architecture", "Frontend-Performance", "AI-Infrastructure", "DevOps-Cloud", "Databases-Storage", "Security", "Languages-Runtimes", "Open-Source-Tools", "Trending-Discussions", "General-Tech"]
+        "enum": ["Architecture", "Frontend-Performance", "AI-Infrastructure", "DevOps-Cloud", "Databases-Storage", "Security", "Languages-Runtimes", "Backend-Engineering", "Open-Source-Tools", "Trending-Discussions", "India-Tech", "General-Tech"]
       },
       "summary": {
         "bsonType": "object",
@@ -156,6 +156,12 @@ CRITICAL RULES:
    or developer-workflow change this introduces — not restate the headline.
 4. Use "Trending-Discussions" for items whose value is the community conversation
    itself (viral threads, debates, hot takes) rather than a specific technical artifact.
+5. Use "India-Tech" for India-specific technology industry, developer-ecosystem,
+   startup, or policy news — this beats other category fits when the India angle
+   is the point of the piece.
+6. Use "Backend-Engineering" for server-side framework patterns, API design,
+   queues/messaging, and runtime performance work that doesn't rise to
+   distributed-systems architecture.
 
 INPUT ARTICLE TEXT:
 ---
@@ -164,7 +170,7 @@ INPUT ARTICLE TEXT:
 
 OUTPUT JSON SCHEMA:
 {
-  "category": "Architecture" | "Frontend-Performance" | "AI-Infrastructure" | "DevOps-Cloud" | "Databases-Storage" | "Security" | "Languages-Runtimes" | "Open-Source-Tools" | "Trending-Discussions" | "General-Tech",
+  "category": "Architecture" | "Frontend-Performance" | "AI-Infrastructure" | "DevOps-Cloud" | "Databases-Storage" | "Security" | "Languages-Runtimes" | "Backend-Engineering" | "Open-Source-Tools" | "Trending-Discussions" | "India-Tech" | "General-Tech",
   "summary": {
     "impactAnalysis": "string",
     "bulletPoints": ["string", "string", "string"]

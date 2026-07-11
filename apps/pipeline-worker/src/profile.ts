@@ -16,6 +16,8 @@ export const INTEREST_STATEMENTS: readonly string[] = [
   'LLM inference infrastructure, embeddings, and AI system design',
   'API design, caching strategies, and service reliability engineering',
   'CI/CD pipelines, containerization, and deployment architecture',
+  'backend engineering: server-side frameworks, message queues, and runtime performance',
+  'Indian technology industry, startup ecosystem, and developer community news',
 ];
 
 /** Only interactions this recent influence the profile. */

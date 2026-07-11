@@ -6,8 +6,10 @@ export const CATEGORIES = [
   'Databases-Storage',
   'Security',
   'Languages-Runtimes',
+  'Backend-Engineering',
   'Open-Source-Tools',
   'Trending-Discussions',
+  'India-Tech',
   'General-Tech',
 ] as const;
 

@@ -19,7 +19,7 @@ export const RSS_FEEDS: ReadonlyArray<{ name: string; url: string }> = [
 ];
 
 /** Daily top posts; discussions and links both flow through scoring like any item. */
-export const REDDIT_SUBS: readonly string[] = ['programming', 'ExperiencedDevs'];
+export const REDDIT_SUBS: readonly string[] = ['programming', 'ExperiencedDevs', 'developersIndia'];
 
 /**
  * Fetch every source with per-source fault isolation: a dead feed logs a warning
