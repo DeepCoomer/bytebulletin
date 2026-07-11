@@ -98,8 +98,9 @@ async function run(): Promise<void> {
   counters.kept = kept.length;
   log.info({ scored: scored.length, kept: kept.length, minScore: env.MIN_SCORE }, 'scoring complete');
 
-  // 5+6. Synthesize and store.
-  const llmLimit = pLimit(2);
+  // 5+6. Synthesize and store. Serial: Groq free tier is 12k tokens/min and a
+  // full article is ~3k — parallel calls just trade 429 retries for throughput.
+  const llmLimit = pLimit(1);
   await Promise.all(
     kept.map((s) =>
       llmLimit(async () => {

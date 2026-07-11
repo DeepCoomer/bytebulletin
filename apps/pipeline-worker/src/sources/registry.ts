@@ -25,12 +25,21 @@ export const REDDIT_SUBS: readonly string[] = ['programming', 'ExperiencedDevs']
  * Fetch every source with per-source fault isolation: a dead feed logs a warning
  * and contributes nothing. Items older than MAX_ITEM_AGE_HOURS are dropped.
  */
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 export async function fetchAllSources(log: Logger): Promise<RawItem[]> {
   const limit = pLimit(5);
+  // Reddit rate-limits parallel hits from one IP — serialize its subs with a stagger.
+  const redditLimit = pLimit(1);
   const tasks: Array<Promise<RawItem[]>> = [
     limit(() => fetchHackerNews()),
     ...RSS_FEEDS.map((feed) => limit(() => fetchRssFeed(feed.url, feed.name))),
-    ...REDDIT_SUBS.map((sub) => limit(() => fetchReddit(sub))),
+    ...REDDIT_SUBS.map((sub) =>
+      redditLimit(async () => {
+        await sleep(1500);
+        return fetchReddit(sub);
+      }),
+    ),
   ];
   const names = [
     'Hacker News',

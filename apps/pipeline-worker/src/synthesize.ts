@@ -36,7 +36,9 @@ export interface ChatClient {
 }
 
 export function createGroqClient(apiKey: string): ChatClient {
-  return new Groq({ apiKey, maxRetries: 3 });
+  // Free tier: 12k tokens/min. Generous retries + serial calls (see main.ts)
+  // let the SDK's backoff absorb TPM 429s instead of dropping items.
+  return new Groq({ apiKey, maxRetries: 6 });
 }
 
 /** Parse + validate raw LLM text. Tolerates accidental ```json fences. Exported for tests. */
