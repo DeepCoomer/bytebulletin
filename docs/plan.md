@@ -264,7 +264,7 @@ insights as separate increments.
 **Auth UX (agreed 2026-07-11): invisible auth.** The public UI shows no login
 affordance anywhere. `/settings` (unlisted, noindex) is the owner door: a bare
 password prompt, no explanation. A session unlocks owner features inside the
-normal UI (feedback buttons, Stocks tab, dashboard tabs); without one, those
+normal UI (feedback buttons, bookmarks, dashboard tabs); without one, those
 features neither render nor exist at the API level (401/empty).
 
 ### Phase 9 — Feed archive ergonomics (DONE 2026-07-11)
@@ -273,15 +273,6 @@ features neither render nor exist at the API level (401/empty).
   filter; "Load older" pagination past the first 100 (API `?before=` cursor).
 - Auto-prune digests older than 90 days at the end of each pipeline run.
 - "Last updated" indicator in the sidebar from the newest digest timestamp.
-
-### Phase 10 — Stocks briefing module (MOVED OUT 2026-07-11)
-
-Deliberately **not** part of ByteBulletin: this repo is public, and a stocks
-system carries a personal watchlist and owner-only concerns. It lives as a
-separate **private** project ("StockPulse", `~/Documents/stockpulse`) with its
-own design doc, reusing this repo's patterns (pipeline shape, invisible auth,
-idempotent upserts) but sharing no code. It uses the same Atlas cluster with a
-separate database and a separately scoped db user.
 
 ## 4. Operating rules for AI-assisted implementation
 
