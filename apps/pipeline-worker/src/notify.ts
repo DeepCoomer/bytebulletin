@@ -4,8 +4,8 @@ import type { Logger } from 'pino';
 
 export interface RunNotification {
   stored: number;
-  /** Highest-scored stored titles, best first — up to 3 shown in the body. */
-  topTitles: string[];
+  /** Highest-scored stored items, best first — up to 3 titles shown in the body. */
+  topItems: Array<{ title: string; dedupHash: string }>;
 }
 
 /**
@@ -16,7 +16,7 @@ export interface RunNotification {
 export async function sendRunNotification(
   env: WorkerEnv,
   log: Logger,
-  { stored, topTitles }: RunNotification,
+  { stored, topItems }: RunNotification,
 ): Promise<void> {
   if (stored === 0) return;
   if (!env.VAPID_PUBLIC_KEY || !env.VAPID_PRIVATE_KEY) {
@@ -28,15 +28,17 @@ export async function sendRunNotification(
   if (subs.length === 0) return;
 
   webpush.setVapidDetails(env.VAPID_SUBJECT, env.VAPID_PUBLIC_KEY, env.VAPID_PRIVATE_KEY);
+  const top3 = topItems.slice(0, 3);
   const body =
-    topTitles
-      .slice(0, 3)
-      .map((t) => `• ${t.length > 72 ? `${t.slice(0, 71)}…` : t}`)
-      .join('\n') || 'Fresh engineering news is ready.';
+    top3.map((t) => `• ${t.title.length > 72 ? `${t.title.slice(0, 71)}…` : t.title}`).join('\n') ||
+    'Fresh engineering news is ready.';
+  // Tapping the notification opens straight to the single highest-scored
+  // article — the other stored items are one tap away in the feed itself.
+  const url = top3[0] ? `/?open=${top3[0].dedupHash}` : '/';
   const payload = JSON.stringify({
     title: `ByteBulletin: ${stored} new digest${stored === 1 ? '' : 's'}`,
     body,
-    url: '/',
+    url,
   });
 
   let sent = 0;

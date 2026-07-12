@@ -3,6 +3,15 @@
 All notable changes to ByteBulletin. Follows [SemVer](https://semver.org):
 MAJOR for breaking data/API changes, MINOR for features, PATCH for fixes.
 
+## [1.0.2] — 2026-07-12
+
+### Changed
+- Notification tap now deep-links to the single highest-scored stored
+  article (`/?open=<hash>`) instead of just opening the app to the feed;
+  falls back to a direct API lookup if the page's hourly ISR cache hasn't
+  picked up the just-stored item yet
+- `GET /api/digests?hash=` added for single-item lookups (deep-link fallback)
+
 ## [1.0.1] — 2026-07-11
 
 ### Fixed

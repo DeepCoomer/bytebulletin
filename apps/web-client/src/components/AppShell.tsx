@@ -65,6 +65,29 @@ export function AppShell({ initialDigests }: { initialDigests: DigestJson[] }) {
       .catch(() => {});
   }, []);
 
+  // Notification deep link: /?open=<dedupHash> opens that article directly.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const hash = params.get('open');
+    if (!hash) return;
+    params.delete('open');
+    const query = params.toString();
+    window.history.replaceState(null, '', window.location.pathname + (query ? `?${query}` : ''));
+
+    const found = digests.find((d) => d.dedupHash === hash);
+    if (found) {
+      setActive(found);
+      return;
+    }
+    // Not in the initially loaded page (ISR can lag a fresh pipeline run) — fetch it directly.
+    fetch(`/api/digests?hash=${encodeURIComponent(hash)}`)
+      .then((r) => r.json())
+      .then((body: { digests: DigestJson[] }) => {
+        if (body.digests[0]) setActive(body.digests[0]);
+      })
+      .catch(() => {});
+  }, []);
+
   // Older pages accumulate locally; exhausted = last page came back short.
   const [older, setOlder] = useState<DigestJson[]>([]);
   const [loadingOlder, setLoadingOlder] = useState(false);

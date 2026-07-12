@@ -1,10 +1,17 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { getDigests } from '@/lib/data';
+import { getDigestByHash, getDigests } from '@/lib/data';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
+    // ?hash=<dedupHash> — single-item lookup for notification deep links.
+    const hash = req.nextUrl.searchParams.get('hash');
+    if (hash) {
+      const digest = await getDigestByHash(hash);
+      return NextResponse.json({ digests: digest ? [digest] : [] });
+    }
+
     // ?before=<ISO date> pages into the archive (exclusive cursor).
     const beforeParam = req.nextUrl.searchParams.get('before');
     const before = beforeParam ? new Date(beforeParam) : undefined;

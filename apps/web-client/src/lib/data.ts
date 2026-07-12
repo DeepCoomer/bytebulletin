@@ -15,3 +15,11 @@ export async function getDigests(before?: Date): Promise<DigestJson[]> {
     .toArray();
   return docs.map((d) => ({ ...d, createdAt: d.createdAt.toISOString() }));
 }
+
+/** Single-digest lookup for notification deep links that outrun the page's ISR cache. */
+export async function getDigestByHash(dedupHash: string): Promise<DigestJson | null> {
+  const env = webEnv();
+  const digests = await getDigestsCollection(env.MONGODB_URI);
+  const doc = await digests.findOne({ dedupHash }, { projection: { _id: 0, embedding: 0 } });
+  return doc ? { ...doc, createdAt: doc.createdAt.toISOString() } : null;
+}
