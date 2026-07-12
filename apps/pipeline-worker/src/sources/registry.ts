@@ -16,6 +16,19 @@ export const RSS_FEEDS: ReadonlyArray<{ name: string; url: string }> = [
   { name: 'Vercel Blog', url: 'https://vercel.com/atom' },
   { name: 'AWS Architecture', url: 'https://aws.amazon.com/blogs/architecture/feed/' },
   { name: 'Lobsters', url: 'https://lobste.rs/rss' },
+  // Trial (2026-07-12): dev.to tag feeds — cherry-picked tags spanning
+  // several categories (not the full firehose) to keep signal-to-noise in
+  // line with the curated blog list. Note: unlike HN (points>100) and Reddit
+  // (top/day), these feeds are chronological, not popularity-sorted, so a
+  // lower hit rate through MIN_SCORE is expected — that's fine, it's the
+  // filter doing its job. The tag is only the ingestion source; the LLM
+  // still assigns the final category from the article content. Remove this
+  // block if it doesn't earn its keep after a couple weeks.
+  { name: 'DEV Community (architecture)', url: 'https://dev.to/feed/tag/architecture' },
+  { name: 'DEV Community (backend)', url: 'https://dev.to/feed/tag/backend' },
+  { name: 'DEV Community (security)', url: 'https://dev.to/feed/tag/security' },
+  { name: 'DEV Community (devops)', url: 'https://dev.to/feed/tag/devops' },
+  { name: 'DEV Community (ai)', url: 'https://dev.to/feed/tag/ai' },
 ];
 
 /** Daily top posts; discussions and links both flow through scoring like any item. */
